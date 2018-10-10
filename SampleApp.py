@@ -121,8 +121,7 @@ class AccountCreate(tk.Frame):
         Email_Label = tk.Entry(self)
         Email_Label.pack()
 
-
-
+        # Saves new user information into database
         def getUserInfo():
             fName = FirstName_Label.get()
             lName = LastName_Label.get()
@@ -130,17 +129,16 @@ class AccountCreate(tk.Frame):
             pWord = Password_Label.get()
             eMail = Email_Label.get()
 
-            conn = sqlite3.connect('TEMP.db')
-            c = conn.cursor()
+            # Need to senta
+            # conn = sqlite3.connect(':memeory:')
+            # c = conn.cursor()
 
-            emp1 = Employee("Kevin","Nguyen", "asdflja;lskdjf")
+            emp1 = Employee(fName,lName, pWord)
             insert_emp(emp1)
-            get_emps_by_name("Doe")
-
-            conn.close()
+            print(get_emps_by_name("Nomura"))
 
 
-
+            # conn.close()
 
             # self.FirstName_Label.config(text=fName)
 

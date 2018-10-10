@@ -19,8 +19,8 @@ class Employee:
 
 #Open connection
 conn = sqlite3.connect('TEMP.db')
-
-# Use cursor to run SQL commands
+# #
+# # # Use cursor to run SQL commands
 c = conn.cursor()
 
 # c.execute("""CREATE TABLE employees(
@@ -71,7 +71,7 @@ def remove_emp(emp):
 #
 # print(get_emps_by_name('Nguyen'))
 
-emp1 = Employee("Kevin", "Nguyen", "1234")
-
-#Close connection
-conn.close()
+# emp1 = Employee("Kevin", "Nguyen", "1234")
+#
+# #Close connection
+# conn.close()
