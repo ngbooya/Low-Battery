@@ -154,19 +154,36 @@ class AccountCreate(tk.Frame):
 
 
 class ForgotPass(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        def return_entry(entry):
+            """Gets and prints the content of the entry"""
+            content = entry.get()
+            return content
+    
         ForgotPass_UserName = tk.Label(self, text="Enter your username", font=controller.title_font)
         ForgotPass_UserName.pack(side="top", fill="x", pady=10)
-        ForgotPass_UserName = tk.Entry(self)
-        ForgotPass_UserName.pack()
-
-
-        button = tk.Button(self, text="Go to the start page",
-                           command=lambda: controller.show_frame("LogIn"))
-        button.pack()
+        entry = tk.Entry(self)
+        entry.pack()
+        entry.bind('<Return>', return_entry)
+        userEmail = return_entry(entry) + "@gmail.com"
+        
+       
+        b1 = tk.Button(self, text="Submit",
+                          command=lambda: controller.show_frame("LogIn"))
+        b1.pack()    
+         
+        
+        '''Attempting to setup temporary password delivery via email'''
+        server = server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.login("lowbattery362@gmail.com", "longestpasswordever")
+        password = ""
+        for i in range(8):
+            password += str(random.randint(0,9))
+        msg = "\nYour temporary password is: " + password
+        server.sendmail("lowbattery362@gmail.com", "dvspirate@gmail.com", msg)
+        server.quit()
 
 
 if __name__ == "__main__":
