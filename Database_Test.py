@@ -26,7 +26,9 @@ c = conn.cursor()
 # c.execute("""CREATE TABLE employees(
 #             first text,
 #             last text,
-#             password text
+#             username text,
+#             password text,
+#             email text
 #             )""")
 
 def insert_emp(emp):

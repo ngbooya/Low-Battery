@@ -49,12 +49,12 @@ class LogIn(tk.Frame):
         userLabel = tk.Label(self, text="Username", font=controller.title_font)
         userLabel.pack(side="top", fill="x", pady=10)
         userLabel = tk.Entry(self)
-        userLabel.pack(side="top", fill="x", pady=10)
+        userLabel.pack()
 
         userLabel = tk.Label(self, text="Password", font=controller.title_font)
         userLabel.pack(side="top", fill="x", pady=10)
         userLabel = tk.Entry(self, show="*")
-        userLabel.pack(side="top", fill="x", pady=10)
+        userLabel.pack()
 
 
         button1 = tk.Button(self, text="Login",
