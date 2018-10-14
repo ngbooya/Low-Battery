@@ -24,8 +24,8 @@ conn = sqlite3.connect('TEMP.db')
 # #
 # # # Use cursor to run SQL commands
 c = conn.cursor()
-
-# c.execute("""CREATE TABLE employees(
+#
+#c.execute("""CREATE TABLE employees(
 #             first text,
 #             last text,
 #             username text,
@@ -66,16 +66,23 @@ def get_emps_by_name(lastname):
 
     return c.fetchall()
 
-def update_password(emp, password):
-    with conn:
-        c.execute("""UPDATE employees SET password = :password
-                    WHERE first = :first AND last = :last""",
-                    {'first': emp.first, 'last': emp.last, 'password':password})
+#def update_password(emp, password):
+#    with conn:
+#        c.execute("""UPDATE employees SET password = :password
+#                    WHERE first = :first AND last = :last""",
+#                    {'first': emp.first, 'last': emp.last, 'password':password})
+
+
 
 def remove_emp(emp):
     with conn:
         c.execute("DELETE from employees WHERE first = :first and last = :last",
                     {'first':emp.first, 'last':emp.last})
+        
+def getEmailFromUsername(e):
+    c.execute("SELECT email FROM employees WHERE username=:username",{'username':e})
+    return c.fetchall()
+
 
 # def login():
 #     while True:
