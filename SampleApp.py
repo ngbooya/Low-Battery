@@ -2,6 +2,8 @@ import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 from tkinter import *
 from Database_Test import *
+import smtplib
+import random
 
 
 #import Tkinter as tk     # python 2
@@ -69,7 +71,12 @@ class LogIn(tk.Frame):
 
         # button1 = tk.Button(self, text="Login",
         #                     command=lambda # : controller.show_frame("HomePage"))
-        button1 = tk.Button(self, text="Login", command=verify)
+        def callback():
+            verify()
+            if(userAuthentication(userNameLabel.get(),userPasswordLabel.get())):
+                controller.show_frame("HomePage")
+            
+        button1 = tk.Button(self, text="Login", command=callback)
 
         button2 = tk.Button(self, text="New User",
                             command=lambda: controller.show_frame("AccountCreate"))
@@ -147,7 +154,7 @@ class AccountCreate(tk.Frame):
 
             emp1 = Employee(fName,lName,uName, pWord, eMail)
             insert_emp(emp1)
-            print(get_emps_by_name("Nguyen"))
+            print(get_emps_by_name("miranda"))
 
 
             # conn.close()
@@ -169,33 +176,39 @@ class ForgotPass(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        def return_entry(entry):
-            """Gets and prints the content of the entry"""
-            content = entry.get()
-            return content
-
+        global entry
+        
         ForgotPass_UserName = tk.Label(self, text="Enter your username", font=controller.title_font)
         ForgotPass_UserName.pack(side="top", fill="x", pady=10)
         entry = tk.Entry(self)
         entry.pack()
-        entry.bind('<Return>', return_entry)
-        userEmail = return_entry(entry) + "@gmail.com"
-
-
-        b1 = tk.Button(self, text="Submit",
-                          command=lambda: controller.show_frame("LogIn"))
+        def update_password(uname, pword):
+            with conn:
+                    c.execute("""UPDATE employees SET password = :password
+                              WHERE username = :username""",{'username':uname, 'password':pword})
+        def sendEmail():
+            userInput = entry.get()
+            print(userInput)
+            print (getEmailFromUsername(userInput)[0])
+            email = getEmailFromUsername(userInput)[0]
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.login("lowbattery362@gmail.com", "longestpasswordever")
+            password = ""
+            for i in range(8):
+                password += str(random.randint(0,9))
+            msg = "\nYour temporary password is: " + password
+            server.sendmail("lowbattery362@gmail.com", email, msg)
+            server.quit()
+            update_password(userInput, password)
+            
+        b1 = tk.Button(self, text="Request Password",
+                          command=sendEmail)
         b1.pack()
+        
+        b2 = tk.Button(self, text="Go Back",
+                          command=lambda: controller.show_frame("LogIn"))
+        b2.pack()
 
-
-        # '''Attempting to setup temporary password delivery via email'''
-        # server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        # server.login("lowbattery362@gmail.com", "longestpasswordever")
-        # password = ""
-        # for i in range(8):
-        #     password += str(random.randint(0,9))
-        # msg = "\nYour temporary password is: " + password
-        # server.sendmail("lowbattery362@gmail.com", "dvspirate@gmail.com", msg)
-        # server.quit()
 
 
 if __name__ == "__main__":
