@@ -3,17 +3,19 @@ import sqlite3
 class Employee:
 
     #Constructor
-    def __init__(self,first, last, password):
+    def __init__(self,first, last, username, password, email):
         self.first = first
         self.last = last
+        self.username = username
         self.password = password
+        self.email = email
     def email(self):
         return '{} {}@email.com'.format(self.first, self.last)
 
     def fullname(self):
         return '{} {}'.format(self.first, self.last)
     def __repr__(self):
-        return "Employee('{}','{}','{}')".format(self.first, self.last, self.password)
+        return "Employee('{}','{}','{}')".format(self.first, self.last,self.username, self.password, self.email)
 
 
 
@@ -33,14 +35,35 @@ c = conn.cursor()
 
 def insert_emp(emp):
     with conn:
-        c.execute("INSERT INTO employees VALUES(:first, :last ,:password)", {'first': emp.first, 'last': emp.last, 'password': emp.password })
+        c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email })
 
 # def insert_emp(emp):
 #     with conn:
 #         c.execute("INSERT INTO employees VALUES(:first, :last ,:password)", {'first': first, 'last': last, 'password': password })
 
+
+def userAuthentication(uname, pword):
+    # status = c.execute("SELECT EXISTS(SELECT * FROM employees WHERE username=:username AND password=:password)", {'username':uname, 'password':pword})
+    #
+    # return status
+
+    c.execute("SELECT * FROM employees WHERE username=:username and password=:password", {'username':uname, 'password':pword})
+
+    data=c.fetchall()
+
+    if len(data) == 0:
+        return False
+    else:
+        return True
+
+
+
+
+
+
 def get_emps_by_name(lastname):
     c.execute("SELECT * FROM employees WHERE last=:last",{'last':lastname})
+
     return c.fetchall()
 
 def update_password(emp, password):
@@ -76,4 +99,4 @@ def remove_emp(emp):
 # emp1 = Employee("Kevin", "Nguyen", "1234")
 #
 # #Close connection
-# conn.close()
+#conn.close()

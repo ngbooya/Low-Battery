@@ -46,19 +46,31 @@ class LogIn(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        userLabel = tk.Label(self, text="Username", font=controller.title_font)
-        userLabel.pack(side="top", fill="x", pady=10)
-        userLabel = tk.Entry(self)
-        userLabel.pack()
+        userNameLabel = tk.Label(self, text="Username", font=controller.title_font)
+        userNameLabel.pack(side="top", fill="x", pady=10)
+        userNameLabel = tk.Entry(self)
+        userNameLabel.pack()
 
-        userLabel = tk.Label(self, text="Password", font=controller.title_font)
-        userLabel.pack(side="top", fill="x", pady=10)
-        userLabel = tk.Entry(self, show="*")
-        userLabel.pack()
+        userPasswordLabel = tk.Label(self, text="Password", font=controller.title_font)
+        userPasswordLabel.pack(side="top", fill="x", pady=10)
+        userPasswordLabel = tk.Entry(self, show="*")
+        userPasswordLabel.pack()
 
+        def verify():
 
-        button1 = tk.Button(self, text="Login",
-                            command=lambda: controller.show_frame("HomePage"))
+            print("Status", userAuthentication(userNameLabel.get(),userPasswordLabel.get()))
+            print("User",userNameLabel.get())
+            print("Password",userPasswordLabel.get())
+
+            if(userAuthentication(userNameLabel.get(),userPasswordLabel.get())):
+                print("You are now logged in")
+            else:
+                print("Invalid username and password")
+
+        # button1 = tk.Button(self, text="Login",
+        #                     command=lambda # : controller.show_frame("HomePage"))
+        button1 = tk.Button(self, text="Login", command=verify)
+
         button2 = tk.Button(self, text="New User",
                             command=lambda: controller.show_frame("AccountCreate"))
         button3 = tk.Button(self, text="Forgot Password",
@@ -133,9 +145,9 @@ class AccountCreate(tk.Frame):
             # conn = sqlite3.connect(':memeory:')
             # c = conn.cursor()
 
-            emp1 = Employee(fName,lName, pWord)
+            emp1 = Employee(fName,lName,uName, pWord, eMail)
             insert_emp(emp1)
-            print(get_emps_by_name("Nomura"))
+            print(get_emps_by_name("Nguyen"))
 
 
             # conn.close()
@@ -161,29 +173,29 @@ class ForgotPass(tk.Frame):
             """Gets and prints the content of the entry"""
             content = entry.get()
             return content
-    
+
         ForgotPass_UserName = tk.Label(self, text="Enter your username", font=controller.title_font)
         ForgotPass_UserName.pack(side="top", fill="x", pady=10)
         entry = tk.Entry(self)
         entry.pack()
         entry.bind('<Return>', return_entry)
         userEmail = return_entry(entry) + "@gmail.com"
-        
-       
+
+
         b1 = tk.Button(self, text="Submit",
                           command=lambda: controller.show_frame("LogIn"))
-        b1.pack()    
-         
-        
-        '''Attempting to setup temporary password delivery via email'''
-        server = server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.login("lowbattery362@gmail.com", "longestpasswordever")
-        password = ""
-        for i in range(8):
-            password += str(random.randint(0,9))
-        msg = "\nYour temporary password is: " + password
-        server.sendmail("lowbattery362@gmail.com", "dvspirate@gmail.com", msg)
-        server.quit()
+        b1.pack()
+
+
+        # '''Attempting to setup temporary password delivery via email'''
+        # server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        # server.login("lowbattery362@gmail.com", "longestpasswordever")
+        # password = ""
+        # for i in range(8):
+        #     password += str(random.randint(0,9))
+        # msg = "\nYour temporary password is: " + password
+        # server.sendmail("lowbattery362@gmail.com", "dvspirate@gmail.com", msg)
+        # server.quit()
 
 
 if __name__ == "__main__":
