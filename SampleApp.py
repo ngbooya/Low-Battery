@@ -4,6 +4,7 @@ from tkinter import *
 from Database_Test import *
 import smtplib
 import random
+import datetime
 
 
 #import Tkinter as tk     # python 2
@@ -25,7 +26,7 @@ class SampleApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (LogIn, HomePage, AccountCreate, ForgotPass):
+        for F in (LogIn, HomePage, AccountCreate, ForgotPass, ViewAll, TimeClock):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -98,13 +99,18 @@ class HomePage(tk.Frame):
         # searchLabel = tk.Entry(self)
         # searchLabel.pack(side="top", fill="x", pady=10)
 
-        viewAllLabel = tk.Button(self, text="View All", font=controller.title_font)
+        viewAllButton = tk.Button(self, text="View All", font=controller.title_font,
+                                  command=lambda: controller.show_frame("ViewAll"))
         #viewAllLabel.pack(side="top", fill="x", pady=10)
-        viewAllLabel.pack()
+        viewAllButton.pack()
+        
+        timeClock = tk.Button(self, text="Clock In/Out", font=controller.title_font,
+                                  command=lambda: controller.show_frame("TimeClock"))
+        timeClock.pack()
         newLabel = tk.Button(self, text="New/Discontinue", font=controller.title_font)
         newLabel.pack()
 
-        button = tk.Button(self, text="LOGOUT",
+        button = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame("LogIn"))
         button.pack()
 
@@ -208,6 +214,50 @@ class ForgotPass(tk.Frame):
         b2 = tk.Button(self, text="Go Back",
                           command=lambda: controller.show_frame("LogIn"))
         b2.pack()
+
+class ViewAll(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        
+        def viewAllEmployees():
+            i = 1
+            with conn:
+                    c.execute("SELECT * FROM employees")
+                    data = c.fetchall()
+                    for row in data:
+                        print("\nemployee:", i)
+                        for j in row:
+                            print("\t", j)
+                        i += 1
+                    controller.show_frame("HomePage")
+
+
+
+        button = tk.Button(self, text="Done",
+                           command=viewAllEmployees)
+        button.pack()
+
+class TimeClock(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        def timeStamp():
+            now = datetime.datetime.now()
+            datetime.time(now.hour, now.minute, now.second)
+            print("Your timestamp is: ", now.strftime("%H:%M:%S"))
+
+        timeIn = tk.Button(self, text="Clock In", font=controller.title_font,
+                           command=timeStamp)
+        timeIn.pack()
+        
+        timeOut = tk.Button(self, text="Clock Out", font=controller.title_font,
+                           command=timeStamp)
+        timeOut.pack()
+        
 
 
 
