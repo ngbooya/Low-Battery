@@ -6,10 +6,24 @@ import smtplib
 import random
 import datetime
 
-
 #import Tkinter as tk     # python 2
 #import tkFont as tkfont  # python 2
 
+aisle = "ABCD"
+side = "12"
+bay = "XYZ"
+shelf = "1234"
+stockNumberList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+itemNumber = ''
+dictionary = {}
+for w in aisle:
+    for x in side:
+        for y in bay:
+            for z in shelf:
+                for s in stockNumberList:
+                    itemNumber = w + x + y + z + "-" + str(s)
+                    dictionary[itemNumber]= 10 #dictionary returns number of available spaces; zero = Full
+                    
 class SampleApp(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -26,7 +40,7 @@ class SampleApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (LogIn, HomePage, AccountCreate, ForgotPass, ViewAll, TimeClock):
+        for F in (LogIn, HomePage, AccountCreate, ForgotPass, ViewAll, TimeClock, AddItem, Search):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -83,9 +97,9 @@ class LogIn(tk.Frame):
                             command=lambda: controller.show_frame("AccountCreate"))
         button3 = tk.Button(self, text="Forgot Password",
                             command=lambda: controller.show_frame("ForgotPass"))
-        button1.pack()
-        button2.pack()
-        button3.pack()
+        button1.pack(pady=2)
+        button2.pack(pady=2)
+        button3.pack(pady=2)
 
 
 class HomePage(tk.Frame):
@@ -93,22 +107,29 @@ class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        
+        addItemButton = tk.Button(self, text="Add Item", font=controller.title_font,
+                                  command=lambda: controller.show_frame("AddItem"))
+        addItemButton.pack(padx=20, pady=10)
 
-        searchLabel = tk.Button(self, text="Search", font=controller.title_font)
-        searchLabel.pack()
-        # searchLabel = tk.Entry(self)
-        # searchLabel.pack(side="top", fill="x", pady=10)
+        searchLabel = tk.Button(self, text="Search", font=controller.title_font,
+                                command = lambda: controller.show_frame("Search"))
+        searchLabel.pack(padx=20, pady=10)
+
+        lowStock = tk.Button(self, text="Low Stock Items", font=controller.title_font)
+        ''', command=lambda:)'''
+        lowStock.pack(padx=20, pady=10)
 
         viewAllButton = tk.Button(self, text="View All", font=controller.title_font,
                                   command=lambda: controller.show_frame("ViewAll"))
         #viewAllLabel.pack(side="top", fill="x", pady=10)
-        viewAllButton.pack()
+        viewAllButton.pack(padx=20, pady=10)
         
         timeClock = tk.Button(self, text="Clock In/Out", font=controller.title_font,
                                   command=lambda: controller.show_frame("TimeClock"))
-        timeClock.pack()
+        timeClock.pack(padx=20, pady=10)
         newLabel = tk.Button(self, text="New/Discontinue", font=controller.title_font)
-        newLabel.pack()
+        newLabel.pack(padx=20, pady=10)
 
         button = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame("LogIn"))
@@ -145,7 +166,7 @@ class AccountCreate(tk.Frame):
         Email_Label.pack(side="top", fill="x", pady=10)
         Email_Label = tk.Entry(self)
         Email_Label.pack()
-
+        
         # Saves new user information into database
         def getUserInfo():
             fName = FirstName_Label.get()
@@ -160,7 +181,10 @@ class AccountCreate(tk.Frame):
 
             emp1 = Employee(fName,lName,uName, pWord, eMail)
             insert_emp(emp1)
-            print(get_emps_by_name("miranda"))
+            creationSuccessWindow = tk.Tk()
+            creationSuccessLabel = tk.Label(creationSuccessWindow, text="Account Created Successfully")
+            creationSuccessLabel.pack()
+#            print(get_emps_by_name("miranda"))
 
 
             # conn.close()
@@ -170,6 +194,8 @@ class AccountCreate(tk.Frame):
 
         SubmitButton = tk.Button(self, text="Submit", command=getUserInfo)
         SubmitButton.pack()
+
+        
 
 
         button = tk.Button(self, text="Go to the start page",
@@ -221,23 +247,42 @@ class ViewAll(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         
+        
         def viewAllEmployees():
             i = 1
+            allEmployees = ""
             with conn:
                     c.execute("SELECT * FROM employees")
                     data = c.fetchall()
+                    textEmployeeFile = open("employeeInfo.txt",'w')
+                    textEmployeeFile.close()
                     for row in data:
-                        print("\nemployee:", i)
+#                        allEmployees = "\nEmployee:" + str(i)
+                        textEmployeeFile = open("employeeInfo.txt",'a')
+                        textEmployeeFile.write("\nEmployee:" + str(i) + "\n")
+#                        print(allEmployees)
                         for j in row:
-                            print("\t", j)
+#                            allEmployees = "\t" + str(j)
+                                textEmployeeFile.write("\t" + str(j) + "\n")
+#                            print(allEmployees)
                         i += 1
+                    textEmployeeFile.close()
                     controller.show_frame("HomePage")
+                    
+                    employeesWindow = tk.Tk()
+                    employeesWindowText = tk.Text(employeesWindow)
+                    fileContents = open("employeeInfo.txt", 'r')
+                    textFromFile = fileContents.readlines()
+                    print (textFromFile)
+                    employeesWindowText.insert(INSERT, textFromFile)
+                    employeesWindowText.pack(fill="none", expand=TRUE)
 
 
 
-        button = tk.Button(self, text="Done",
+
+        button = tk.Button(self, text="View",
                            command=viewAllEmployees)
-        button.pack()
+        button.place(relx=.5, rely=.5, anchor=CENTER)
 
 class TimeClock(tk.Frame):
 
@@ -248,7 +293,12 @@ class TimeClock(tk.Frame):
         def timeStamp():
             now = datetime.datetime.now()
             datetime.time(now.hour, now.minute, now.second)
-            print("Your timestamp is: ", now.strftime("%H:%M:%S"))
+            timeStamp = "Your timestamp is: " + now.strftime("%H:%M:%S")
+            timeStampWindow = tk.Tk()
+            timeStampLabel = tk.Label(timeStampWindow, text=timeStamp)
+            timeStampLabel.pack()
+#            print("Your timestamp is: ", now.strftime("%H:%M:%S"))
+            controller.show_frame("HomePage")
 
         timeIn = tk.Button(self, text="Clock In", font=controller.title_font,
                            command=timeStamp)
@@ -258,7 +308,76 @@ class TimeClock(tk.Frame):
                            command=timeStamp)
         timeOut.pack()
         
+class AddItem(tk.Frame):
 
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        
+        
+        itemNameLabel = tk.Label(self, text="Item Name", font=controller.title_font)
+        itemNameLabel.pack(side="top", fill="x", pady=10)
+        itemNameLabel = tk.Entry(self)
+        itemNameLabel.pack()
+        
+        howManyLabel = tk.Label(self, text="# to add to\ninventory", font=controller.title_font)
+        howManyLabel.pack(side="top", fill="x", pady=10)
+        howManyLabel = tk.Entry(self)
+        howManyLabel.pack()
+        
+        wholesalePriceLabel = tk.Label(self, text="Wholesale Price", font=controller.title_font)
+        wholesalePriceLabel.pack(side="top", fill="x", pady=10)
+        wholesalePriceLabel = tk.Entry(self)
+        wholesalePriceLabel.pack()
+        
+        retailPriceLabel = tk.Label(self, text="Retail Price", font=controller.title_font)
+        retailPriceLabel.pack(side="top", fill="x", pady=10)
+        retailPriceLabel = tk.Entry(self)
+        retailPriceLabel.pack()
+
+#        for i in dictionary:
+#            print(i)
+#            if(int(dictionary[i]) >= int(howManyLabel.get()):
+#                dictionary[i]= int(dictionary[i]) - int(howManyLabel.get())
+#            else:
+#                continue
+
+        def verify():
+            print(itemNameLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get())
+            
+        def callback():
+            verify()
+            addConfirmationWindow = tk.Tk()
+            addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
+            addConfirmationLabel.pack(side="top", fill="x", pady=10)
+            
+            
+        button1 = tk.Button(self, text="Add New Item", command=callback)
+
+        button2 = tk.Button(self, text="Go Back",
+                            command=lambda: controller.show_frame("HomePage"))
+#        button3 = tk.Button(self, text="Forgot Password",
+#                            command=lambda: controller.show_frame("ForgotPass"))
+        button1.pack(pady=2)
+        button2.pack(pady=2)
+#        button3.pack(pady=2)
+        
+class Search(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        
+        itemNameLabel = tk.Label(self, text="Item Name", font=controller.title_font)
+        itemNameLabel.pack(side="top", fill="x", pady=10)
+        itemNameLabel = tk.Entry(self)
+        itemNameLabel.pack()
+        
+class LowStock(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
 
 
 if __name__ == "__main__":
