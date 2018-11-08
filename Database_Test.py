@@ -17,6 +17,24 @@ class Employee:
     def __repr__(self):
         return "Employee('{}','{}','{}')".format(self.first, self.last,self.username, self.password, self.email)
 
+class Item:
+
+    #Constructor
+    def __init__(self,itemName, itemNumber, quantity, wPrice, rPRice):
+        self.itemName = itemName
+        self.itemNumber = itemNumber
+        self.quantity = quantity
+        self.wPrice = wPrice
+        self.rPrice= rPrice
+        
+#    def email(self):
+#        return '{} {}@email.com'.format(self.first, self.last)
+#
+#    def fullname(self):
+#        return '{} {}'.format(self.first, self.last)
+#    def __repr__(self):
+#        return "Employee('{}','{}','{}')".format(self.first, self.last,self.username, self.password, self.email)
+
 
 
 #Open connection
@@ -33,6 +51,18 @@ c = conn.cursor()
 #             email text
 #             )""")
 
+c.execute("""CREATE TABLE IF NOT EXISTS items(
+             item_name text,
+             item_number text,
+             quantity_on_hand integer,
+             wholesale_price integer,
+             retail_price integer
+             )""")
+
+#def addItem():
+#    with conn:
+#        c.execute("INSERT INTO itmes VALUES(:item_name, :item_number, :quantity_on_hand, :wholesale_price, :retail_price)
+
 def insert_emp(emp):
     with conn:
         c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email })
@@ -48,7 +78,6 @@ def userAuthentication(uname, pword):
     # return status
 
     c.execute("SELECT * FROM employees WHERE username=:username and password=:password", {'username':uname, 'password':pword})
-
     data=c.fetchall()
 
     if len(data) == 0:
