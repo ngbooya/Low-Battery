@@ -26,7 +26,7 @@ class Item:
         self.quantity = quantity
         self.wPrice = wPrice
         self.rPrice= rPrice
-        
+
 #    def email(self):
 #        return '{} {}@email.com'.format(self.first, self.last)
 #
@@ -43,7 +43,7 @@ conn = sqlite3.connect('TEMP.db')
 # # # Use cursor to run SQL commands
 c = conn.cursor()
 #
-#c.execute("""CREATE TABLE employees(
+# c.execute("""CREATE TABLE employees(
 #             first text,
 #             last text,
 #             username text,
@@ -51,15 +51,15 @@ c = conn.cursor()
 #             email text
 #             )""")
 
-c.execute("""CREATE TABLE IF NOT EXISTS items(
-             item_name text,
-             item_number text,
-             quantity_on_hand integer,
-             wholesale_price integer,
-             retail_price integer
-             )""")
+# c.execute("""CREATE TABLE IF NOT EXISTS items(
+#              item_name text,
+#              item_number text,
+#              quantity_on_hand integer,
+#              wholesale_price integer,
+#              retail_price integer
+#              )""")
 
-#def addItem():
+# def addItem():
 #    with conn:
 #        c.execute("INSERT INTO itmes VALUES(:item_name, :item_number, :quantity_on_hand, :wholesale_price, :retail_price)
 
@@ -95,7 +95,7 @@ def get_emps_by_name(lastname):
 
     return c.fetchall()
 
-#def update_password(emp, password):
+# def update_password(emp, password):
 #    with conn:
 #        c.execute("""UPDATE employees SET password = :password
 #                    WHERE first = :first AND last = :last""",
@@ -107,7 +107,7 @@ def remove_emp(emp):
     with conn:
         c.execute("DELETE from employees WHERE first = :first and last = :last",
                     {'first':emp.first, 'last':emp.last})
-        
+
 def getEmailFromUsername(e):
     c.execute("SELECT email FROM employees WHERE username=:username",{'username':e})
     return c.fetchall()
