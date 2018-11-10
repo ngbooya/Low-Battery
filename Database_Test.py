@@ -43,7 +43,7 @@ conn = sqlite3.connect('TEMP.db')
 # # # Use cursor to run SQL commands
 c = conn.cursor()
 #
-# c.execute("""CREATE TABLE employees(
+#c.execute("""CREATE TABLE employees(
 #             first text,
 #             last text,
 #             username text,
@@ -59,6 +59,7 @@ c = conn.cursor()
 #              retail_price integer
 #              )""")
 
+
 # def addItem():
 #    with conn:
 #        c.execute("INSERT INTO itmes VALUES(:item_name, :item_number, :quantity_on_hand, :wholesale_price, :retail_price)
@@ -66,11 +67,6 @@ c = conn.cursor()
 def insert_emp(emp):
     with conn:
         c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email })
-
-# def insert_emp(emp):
-#     with conn:
-#         c.execute("INSERT INTO employees VALUES(:first, :last ,:password)", {'first': first, 'last': last, 'password': password })
-
 
 def userAuthentication(uname, pword):
     # status = c.execute("SELECT EXISTS(SELECT * FROM employees WHERE username=:username AND password=:password)", {'username':uname, 'password':pword})
@@ -113,26 +109,4 @@ def getEmailFromUsername(e):
     return c.fetchall()
 
 
-# def login():
-#     while True:
-#         username = input("Please enter your username")
-#         password = input("Please enter your password")
-#         with sqlite3.connect("Quiz.db") as db:
-#             cursor = db.cursor()
-#         find_user = ("SELECT *  FROM users WHERE username = ?")
-
-
-# fName = input('Enter first name: ')
-# lName = input('Enter last name: ')
-# pWord = input('Enter password: ')
-
-# emp1 = Employee(fName, lName, pWord)
-#
-# insert_emp(emp1)
-#
-# print(get_emps_by_name('Nguyen'))
-
-# emp1 = Employee("Kevin", "Nguyen", "1234")
-#
-# #Close connection
 #conn.close()
