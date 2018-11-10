@@ -328,15 +328,15 @@ class AddItem(tk.Frame):
         howManyLabel = tk.Entry(self)
         howManyLabel.pack()
 
-        # wholesalePriceLabel = tk.Label(self, text="Wholesale Price", font=controller.title_font)
-        # wholesalePriceLabel.pack(side="top", fill="x", pady=10)
-        # wholesalePriceLabel = tk.Entry(self)
-        # wholesalePriceLabel.pack()
-        #
-        # retailPriceLabel = tk.Label(self, text="Retail Price", font=controller.title_font)
-        # retailPriceLabel.pack(side="top", fill="x", pady=10)
-        # retailPriceLabel = tk.Entry(self)
-        # retailPriceLabel.pack()
+        wholesalePriceLabel = tk.Label(self, text="Wholesale Price", font=controller.title_font)
+        wholesalePriceLabel.pack(side="top", fill="x", pady=10)
+        wholesalePriceLabel = tk.Entry(self)
+        wholesalePriceLabel.pack()
+    
+        retailPriceLabel = tk.Label(self, text="Retail Price", font=controller.title_font)
+        retailPriceLabel.pack(side="top", fill="x", pady=10)
+        retailPriceLabel = tk.Entry(self)
+        retailPriceLabel.pack()
 
 #        for i in dictionary:
 #            print(i)
@@ -345,14 +345,12 @@ class AddItem(tk.Frame):
 #            else:
 #                continue
 
-        def verify():
-            print(itemNameLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get())
 
         def callback():
-            verify()
             addConfirmationWindow = tk.Tk()
             addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
             addConfirmationLabel.pack(side="top", fill="x", pady=10)
+            insertItem(itemNameLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get())
 
 
         button1 = tk.Button(self, text="Add New Item", command=callback)
