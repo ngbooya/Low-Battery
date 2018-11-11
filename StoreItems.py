@@ -1,4 +1,5 @@
 import sqlite3
+import random
 
 conn = sqlite3.connect('TEMP.db')
 
@@ -8,6 +9,7 @@ c = conn.cursor()
 #            itemLocation text,
 #            itemName text,
 #            itemNumber text,
+#            itemModel text,
 #            date_created real,
 #            date_sold real,
 #            date_updated real,
@@ -15,11 +17,11 @@ c = conn.cursor()
 #            itemPrice real,
 #            itemQty integer
 #            )""")
-
+#
 #c.execute("""CREATE TABLE locations(
 #             itemNumPrefix text,
 #             available boolean,
-#             numOccuppied int
+#             numAvailable int
 #             )""")
 
 
@@ -43,17 +45,17 @@ def initializeItemLocations():
         data = c.fetchall()
         print(data)
 
-initializeItemLocations()
+#initializeItemLocations()
 
-def insertItem(name, quantity, wPrice, rPrice, avail = 1):
-    c.execute("SELECT itemNumPrefix FROM locations WHERE available =:available ND", {'available':avail})
-    for i in c.fetchall():
-        if(available == True):
-            print("it might be working")
-            break
-        else:
-            continue
-    c.fetchone
+def insertItem(name, model, quantity, wPrice, rPrice, avail):
+    c.execute("SELECT itemNumPrefix FROM locations WHERE numAvailable>=:numAvailable",{'numAvailable':quantity})
+    itemLocation = c.fetchone()
+    c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :date_created, :date_sold, :date_updated, :weight, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation[0], 'itemModel':model, 'date_created': 9.9, 'date_sold': 9.9, 'date_updated':9.9, 'weight': 9.9, 'itemPrice': rPrice, 'itemQty':quantity})
+    c.execute("SELECT * FROM items")
+    print(c.fetchall())
+    
+    
+
 
 # def insertItem(name, number, created, sold, updated, weight, price):
 #     with conn:
