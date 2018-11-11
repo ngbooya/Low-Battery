@@ -123,7 +123,7 @@ class HomePage(tk.Frame):
         ''', command=lambda:)'''
         lowStock.pack(padx=20, pady=10)
 
-        viewAllButton = tk.Button(self, text="View All", font=controller.title_font,
+        viewAllButton = tk.Button(self, text="View All Employees", font=controller.title_font,
                                   command=lambda: controller.show_frame("ViewAll"))
         #viewAllLabel.pack(side="top", fill="x", pady=10)
         viewAllButton.pack(padx=20, pady=10)
@@ -322,6 +322,12 @@ class AddItem(tk.Frame):
         itemNameLabel.pack(side="top", fill="x", pady=10)
         itemNameLabel = tk.Entry(self)
         itemNameLabel.pack()
+        
+        itemModelLabel = tk.Label(self, text="Item Model", font=controller.title_font)
+        itemModelLabel.pack(side="top", fill="x", pady=10)
+        itemModelLabel = tk.Entry(self)
+        itemModelLabel.pack()
+
 
         howManyLabel = tk.Label(self, text="# to add to\ninventory", font=controller.title_font)
         howManyLabel.pack(side="top", fill="x", pady=10)
@@ -350,7 +356,7 @@ class AddItem(tk.Frame):
             addConfirmationWindow = tk.Tk()
             addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
             addConfirmationLabel.pack(side="top", fill="x", pady=10)
-            insertItem(itemNameLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get())
+            insertItem(itemNameLabel.get(), itemModelLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get(), 1)
 
 
         button1 = tk.Button(self, text="Add New Item", command=callback)
