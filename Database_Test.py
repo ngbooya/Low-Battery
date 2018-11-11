@@ -42,7 +42,7 @@ conn = sqlite3.connect('TEMP.db')
 # #
 # # # Use cursor to run SQL commands
 c = conn.cursor()
-#
+
 #c.execute("""CREATE TABLE employees(
 #             first text,
 #             last text,
