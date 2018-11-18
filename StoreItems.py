@@ -1,29 +1,11 @@
 import sqlite3
 import random
+import csv
+import tkinter as tk
 
 conn = sqlite3.connect('TEMP.db')
 
 c = conn.cursor()
-
-#c.execute("""CREATE TABLE items(
-#            itemLocation text,
-#            itemName text,
-#            itemNumber text,
-#            itemModel text,
-#            date_created real,
-#            date_sold real,
-#            date_updated real,
-#            weight real,
-#            itemPrice real,
-#            itemQty integer
-#            )""")
-#
-#c.execute("""CREATE TABLE locations(
-#             itemNumPrefix text,
-#             available boolean,
-#             numAvailable int
-#             )""")
-
 
 
 def initializeItemLocations():
@@ -31,8 +13,8 @@ def initializeItemLocations():
     side = "12"
     bay = "XYZ"
     shelf = "1234"
-    itemNum = ""      
-    c = conn.cursor()           
+    itemNum = ""
+    c = conn.cursor()
     for a in alpha:
        for b in side:
            for cc in bay:
@@ -40,23 +22,52 @@ def initializeItemLocations():
                    itemNum = a+b+cc+d
                    with conn:
                        c.execute("INSERT INTO locations VALUES(:itemNumPrefix, :available ,:numAvailable)", {'itemNumPrefix': itemNum, 'available': True,'numAvailable': 10})
-    with conn:     
+    with conn:
         c.execute("SELECT * FROM locations")
         data = c.fetchall()
         print(data)
 
-#initializeItemLocations()
+# initializeItemLocations()
 
 def insertItem(name, model, quantity, wPrice, rPrice, avail):
     c.execute("SELECT itemNumPrefix FROM locations WHERE numAvailable>=:numAvailable",{'numAvailable':quantity})
     itemLocation = c.fetchone()
-    c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :date_created, :date_sold, :date_updated, :weight, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation[0], 'itemModel':model, 'date_created': 9.9, 'date_sold': 9.9, 'date_updated':9.9, 'weight': 9.9, 'itemPrice': rPrice, 'itemQty':quantity})
+
+    with conn:
+        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :date_created, :date_sold, :date_updated, :weight, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation[0], 'itemModel':model, 'date_created': "10-18-2018", 'date_sold': "11-16-2018", 'date_updated':"10-18-2018", 'weight': 1.12, 'itemPrice': rPrice, 'itemQty':quantity})
+
     c.execute("SELECT * FROM items")
+    # print(c.fetchall())
+
+def exportCSV():
+    with conn:
+        csvWriter = csv.writer(open("output.csv", "w"))
+        c.execute("SELECT * FROM items")
+        rows = c.fetchall()
+
+        csvWriter.writerows(rows)
+
+def searchItem(iName):
+    c.execute("SELECT * FROM items WHERE itemName=:itemName", {'itemName': iName})
+    searchResult = c.fetchall()
+
+    searchResultsWindow = tk.Tk()
+    searchResultsWindow.title('Results')
+    searchResultsLabel = tk.Label(searchResultsWindow, text=searchResult)
+    searchResultsLabel.pack()
+
+def lowInventory():
+    c.execute("SELECT * FROM items WHERE itemQty<=:itemQty", {'itemQty':2})
+    results = c.fetchall()
+    lowStockWindow = tk.Tk()
+    lowStockWindow.title('Low Stock Items')
+    lowStockLabel = tk.Label(lowStockWindow, text=results)
+    lowStockLabel.pack()
+
+def salesAnalysis():
+    c.execute("SELECT *, SUM(itemPrice) FROM items GROUP BY itemName ORDER BY SUM(itemPrice) DESC")
     print(c.fetchall())
-    
-    
 
-
-# def insertItem(name, number, created, sold, updated, weight, price):
-#     with conn:
-#         c.execute("INSERT INTO itms VALUES(:itemName, :itemNumber, :date_created, :date_sold, :date_updated,:weight,:price)", {'itemName':name, 'itemNumber': number,'date_created':created, 'date_sold':sold, 'date_updated':updated, 'weight':weight, 'itemPrice':price})
+def removeItems(iName):
+    with conn:
+        c.execute("DELETE FROM items WHERE itemName=:itemName", {'itemName':iName})

@@ -43,7 +43,7 @@ class SampleApp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (LogIn, HomePage, AccountCreate, ForgotPass, ViewAll, TimeClock, AddItem, Search):
+        for F in (LogIn, HomePage, AccountCreate, ForgotPass, ViewAll, TimeClock, AddItem, Delete ,InventoryAudit, Search):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -115,12 +115,18 @@ class HomePage(tk.Frame):
                                   command=lambda: controller.show_frame("AddItem"))
         addItemButton.pack(padx=20, pady=10)
 
-        searchLabel = tk.Button(self, text="Search", font=controller.title_font,
+        auditButton = tk.Button(self, text="Inventory Audit", font=controller.title_font,
+                                  command=exportCSV)
+        auditButton.pack()
+
+        searchLabel = tk.Button(self, text="Search Items", font=controller.title_font,
                                 command = lambda: controller.show_frame("Search"))
         searchLabel.pack(padx=20, pady=10)
 
-        lowStock = tk.Button(self, text="Low Stock Items", font=controller.title_font)
-        ''', command=lambda:)'''
+        deleteLabel = tk.Button(self, text="Remove Item", font=controller.title_font, command = lambda: controller.show_frame("Delete"))
+        deleteLabel.pack(padx=20, pady=10)
+
+        lowStock = tk.Button(self, text="Low Stock Items", font=controller.title_font, command=lowInventory)
         lowStock.pack(padx=20, pady=10)
 
         viewAllButton = tk.Button(self, text="View All Employees", font=controller.title_font,
@@ -131,8 +137,13 @@ class HomePage(tk.Frame):
         timeClock = tk.Button(self, text="Clock In/Out", font=controller.title_font,
                                   command=lambda: controller.show_frame("TimeClock"))
         timeClock.pack(padx=20, pady=10)
-        newLabel = tk.Button(self, text="New/Discontinue", font=controller.title_font)
-        newLabel.pack(padx=20, pady=10)
+
+
+        # Need to implement
+        # salesAnalysisButton = tk.Button(self, text="Print Sales Analytics", font=controller.title_font, command=lambda: )
+        # salesAnalysisButton.pack()
+
+
 
         button = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame("LogIn"))
@@ -245,11 +256,9 @@ class ForgotPass(tk.Frame):
         b2.pack()
 
 class ViewAll(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
 
         def viewAllEmployees():
             i = 1
@@ -279,9 +288,6 @@ class ViewAll(tk.Frame):
                     print (textFromFile)
                     employeesWindowText.insert(INSERT, textFromFile)
                     employeesWindowText.pack(fill="none", expand=TRUE)
-
-
-
 
         button = tk.Button(self, text="View",
                            command=viewAllEmployees)
@@ -322,7 +328,7 @@ class AddItem(tk.Frame):
         itemNameLabel.pack(side="top", fill="x", pady=10)
         itemNameLabel = tk.Entry(self)
         itemNameLabel.pack()
-        
+
         itemModelLabel = tk.Label(self, text="Item Model", font=controller.title_font)
         itemModelLabel.pack(side="top", fill="x", pady=10)
         itemModelLabel = tk.Entry(self)
@@ -338,25 +344,17 @@ class AddItem(tk.Frame):
         wholesalePriceLabel.pack(side="top", fill="x", pady=10)
         wholesalePriceLabel = tk.Entry(self)
         wholesalePriceLabel.pack()
-    
+
         retailPriceLabel = tk.Label(self, text="Retail Price", font=controller.title_font)
         retailPriceLabel.pack(side="top", fill="x", pady=10)
         retailPriceLabel = tk.Entry(self)
         retailPriceLabel.pack()
 
-#        for i in dictionary:
-#            print(i)
-#            if(int(dictionary[i]) >= int(howManyLabel.get()):
-#                dictionary[i]= int(dictionary[i]) - int(howManyLabel.get())
-#            else:
-#                continue
-
-
         def callback():
             addConfirmationWindow = tk.Tk()
             addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
             addConfirmationLabel.pack(side="top", fill="x", pady=10)
-            insertItem(itemNameLabel.get(), itemModelLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get(), 1)
+            insertItem(itemNameLabel.get().upper(), itemModelLabel.get().upper(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get(), 1)
 
 
         button1 = tk.Button(self, text="Add New Item", command=callback)
@@ -369,6 +367,14 @@ class AddItem(tk.Frame):
         button2.pack(pady=2)
 #        button3.pack(pady=2)
 
+class InventoryAudit(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        exportSuccess = tk.Label(self, text="CSV Created Successfully")
+        exportSuccess.pack()
+
 class Search(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -380,11 +386,39 @@ class Search(tk.Frame):
         itemNameLabel = tk.Entry(self)
         itemNameLabel.pack()
 
+        def callback():
+            searchItem(itemNameLabel.get().upper())
+
+        searchButton = tk.Button(self, text="Go", command=callback)
+        searchButton.pack()
+
 class LowStock(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+
+class Delete(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+
+        itemNameLabel = tk.Label(self, text="Item Name", font=controller.title_font)
+        itemNameLabel.pack(side="top", fill="x", pady=10)
+        itemNameLabel = tk.Entry(self)
+        itemNameLabel.pack()
+
+        def callback():
+            removeItems(itemNameLabel.get().upper())
+            deleteSuccess = tk.Label(self, text="Item Deleted Successfully")
+            deleteSuccess.pack()
+            
+        deleteButton = tk.Button(self, text="Remove Item", command=callback)
+        deleteButton.pack()
+
+
+
 
 
 if __name__ == "__main__":

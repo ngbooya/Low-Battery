@@ -36,33 +36,40 @@ class Item:
 #        return "Employee('{}','{}','{}')".format(self.first, self.last,self.username, self.password, self.email)
 
 
-
 #Open connection
 conn = sqlite3.connect('TEMP.db')
 # #
 # # # Use cursor to run SQL commands
 c = conn.cursor()
+def initializeTABLES():
+    c.execute("""CREATE TABLE employees(
+                first text,
+                last text,
+                username text,
+                password text,
+                email text
+                )""")
 
-#c.execute("""CREATE TABLE employees(
-#             first text,
-#             last text,
-#             username text,
-#             password text,
-#             email text
-#             )""")
+    c.execute("""CREATE TABLE items(
+               itemName text,
+               itemNumber text,
+               itemModel text,
+               date_created text,
+               date_sold text,
+               date_updated text,
+               weight real,
+               itemPrice real,
+               itemQty integer
+               )""")
 
-# c.execute("""CREATE TABLE IF NOT EXISTS items(
-#              item_name text,
-#              item_number text,
-#              quantity_on_hand integer,
-#              wholesale_price integer,
-#              retail_price integer
-#              )""")
+    c.execute("""CREATE TABLE locations(
+                itemNumPrefix text,
+                available boolean,
+                numAvailable int
+                )""")
+# initializeTABLES()
 
 
-# def addItem():
-#    with conn:
-#        c.execute("INSERT INTO itmes VALUES(:item_name, :item_number, :quantity_on_hand, :wholesale_price, :retail_price)
 
 def insert_emp(emp):
     with conn:
@@ -81,11 +88,6 @@ def userAuthentication(uname, pword):
     else:
         return True
 
-
-
-
-
-
 def get_emps_by_name(lastname):
     c.execute("SELECT * FROM employees WHERE last=:last",{'last':lastname})
 
@@ -96,8 +98,6 @@ def get_emps_by_name(lastname):
 #        c.execute("""UPDATE employees SET password = :password
 #                    WHERE first = :first AND last = :last""",
 #                    {'first': emp.first, 'last': emp.last, 'password':password})
-
-
 
 def remove_emp(emp):
     with conn:
