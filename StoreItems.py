@@ -27,17 +27,37 @@ def initializeItemLocations():
         data = c.fetchall()
         print(data)
 
-# initializeItemLocations()
+#initializeItemLocations()
 
-def insertItem(name, model, quantity, wPrice, rPrice, avail):
-    c.execute("SELECT itemNumPrefix FROM locations WHERE numAvailable>=:numAvailable",{'numAvailable':quantity})
-    itemLocation = c.fetchone()
+def insertItem(name, model, quantity, wPrice, rPrice):
+    conn = sqlite3.connect('TEMP.db')
+    c = conn.cursor()
+    c.execute("SELECT itemNumPrefix FROM locations WHERE numAvailable>=:numAvailable",{'numAvailable':quantity    })
+    itemLocationList = c.fetchone()
+    itemLocation = itemLocationList[0]
+    print("Item location is of type: ", type(itemLocation))
+    c.execute("SELECT numAvailable FROM locations WHERE itemNumPrefix=:itemNumPrefix",{'itemNumPrefix':itemLocation})
+    availabilityAtLocation = c.fetchone()[0]
 
     with conn:
-        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :date_created, :date_sold, :date_updated, :weight, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation[0], 'itemModel':model, 'date_created': "10-18-2018", 'date_sold': "11-16-2018", 'date_updated':"10-18-2018", 'weight': 1.12, 'itemPrice': rPrice, 'itemQty':quantity})
+        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :date_created, :date_sold, :date_updated, :weight, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation, 'itemModel':model, 'date_created': "10-18-2018", 'date_sold': "11-16-2018", 'date_updated':"10-18-2018", 'weight': 1.12, 'itemPrice': rPrice, 'itemQty':quantity})
+        conn.commit()
+    conn.close()
 
-    c.execute("SELECT * FROM items")
+#    c.execute("SELECT * FROM items")
     # print(c.fetchall())
+    conn = sqlite3.connect('TEMP.db')
+    c = conn.cursor()
+    updatedAvailability = int(availabilityAtLocation) - int(quantity)
+    updateAvailability(itemLocation, updatedAvailability)
+    conn.close()
+    
+def updateAvailability(itemLoc, updatedAvail):
+    with conn:
+            c.execute("""UPDATE locations SET numAvailable=:numAvailable WHERE itemNumPrefix=:itemNumPrefix""",{'numAvailable':updatedAvail, 'itemNumPrefix':itemLoc})
+            conn.commit()
+
+        
 
 def exportCSV():
     with conn:
