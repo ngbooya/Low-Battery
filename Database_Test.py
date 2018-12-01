@@ -58,6 +58,8 @@ def initializeTABLES():
                date_created datetime,
                wholesalePrice real,
                itemPrice real,
+               wWorth real,
+               rWorth real,
                itemQty integer
                )""")
 

@@ -198,6 +198,11 @@ class HomePage(tk.Frame):
                           command=lambda: controller.show_frame("Email"))
         email.pack(padx=20, pady=10, fill='x')
 
+        ProfitButton = tk.Button(self, text="Profit Potential", font=controller.title_font,
+                          command=profitPotential)
+        ProfitButton.pack(padx=20, pady=10, fill='x')
+
+
 
         button = tk.Button(self, text="Logout",
                            command=lambda: controller.show_frame("LogIn"))
@@ -406,7 +411,7 @@ class AddItem(tk.Frame):
             addConfirmationWindow = tk.Tk()
             addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
             addConfirmationLabel.pack(side="top", fill="x", pady=10)
-            insertItem(itemNameLabel.get().upper(), itemModelLabel.get().upper(), UPCLabel.get(), howManyLabel.get(), wholesalePriceLabel.get(), retailPriceLabel.get())
+            insertItem(itemNameLabel.get().upper(), itemModelLabel.get().upper(), UPCLabel.get(), int(howManyLabel.get()), wholesalePriceLabel.get(), retailPriceLabel.get())
             itemNameLabel.delete(0,END)
             itemModelLabel.delete(0,END)
             howManyLabel.delete(0,END)
@@ -442,9 +447,15 @@ class Search(tk.Frame):
         itemNameLabel = tk.Entry(self)
         itemNameLabel.pack()
 
+        UPCLabel = tk.Label(self, text="UPC", font=controller.title_font)
+        UPCLabel.pack(side="top", fill="x", pady=10)
+        UPCLabel = tk.Entry(self)
+        UPCLabel.pack()
+
         def callback():
-            searchItem(itemNameLabel.get().upper())
+            searchItem(itemNameLabel.get().upper(), UPCLabel.get())
             itemNameLabel.delete(0,END)
+            UPCLabel.delete(0,END)
 
         searchButton = tk.Button(self, text="Search", command=callback)
         searchButton.pack(pady=2)
@@ -596,8 +607,6 @@ class Email(tk.Frame):
 
         defaultButton = tk.Button(self, text="Go Back", command=lambda: controller.show_frame("HomePage"))
         defaultButton.pack()
-
-
 
 
 if __name__ == "__main__":

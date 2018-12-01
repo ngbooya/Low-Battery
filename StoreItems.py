@@ -87,8 +87,10 @@ def insertItem(name, model, upc, quantity, wPrice, rPrice):
     c.execute("SELECT numAvailable FROM locations WHERE itemNumPrefix=:itemNumPrefix",{'itemNumPrefix':itemLocation})
     availabilityAtLocation = c.fetchone()[0]
     current_date = datetime.datetime.now().strftime("%m-%d-%y")
+    retailVal = int(quantity) * float(rPrice)
+    wholesaleVal = int(quantity) * float(wPrice)
     with conn:
-        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :UPC, :date_created, :wholesalePrice, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation, 'itemModel':model, 'UPC':upc, 'date_created': current_date, 'wholesalePrice': wPrice, 'itemPrice': rPrice, 'itemQty':quantity})
+        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :UPC, :date_created, :wholesalePrice, :itemPrice, :wWorth, :rWorth, :itemQty)",{'itemName': name, 'itemNumber':itemLocation, 'itemModel':model, 'UPC':upc, 'date_created': current_date, 'wholesalePrice': wPrice, 'itemPrice': rPrice, 'itemQty':quantity, 'wWorth':wholesaleVal, 'rWorth':retailVal})
         conn.commit()
     conn.close()
 
@@ -114,20 +116,38 @@ def exportCSV():
         rows = c.fetchall()
         csvWriter.writerows(rows)
 
-def searchItem(iName):
-    c.execute("SELECT * FROM items WHERE itemName=:itemName", {'itemName': iName})
-    searchResult = c.fetchall()
-    numOfResults = len(searchResult)
-    outputString = ""
-    for i in range(numOfResults):
-        for j in searchResult[i]:
-            outputString = outputString + str(j) + " | "
-        outputString = outputString + "\n"
+def searchItem(iName,iUPC):
+    if iName != "":
+        c.execute("SELECT * FROM items WHERE itemName=:itemName", {'itemName': iName})
+        searchResult = c.fetchall()
+        numOfResults = len(searchResult)
+        outputString = ""
+        for i in range(numOfResults):
+            for j in searchResult[i]:
+                outputString = outputString + str(j) + " | "
+            outputString = outputString + "\n"
 
-    searchResultsWindow = tk.Tk()
-    searchResultsWindow.title('Results')
-    searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
-    searchResultsLabel.pack()
+        searchResultsWindow = tk.Tk()
+        searchResultsWindow.title('Results')
+        searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
+        searchResultsLabel.pack()
+
+    else:
+        c.execute("SELECT * FROM items WHERE UPC=:UPC", {'UPC': iUPC})
+        searchResult = c.fetchall()
+        numOfResults = len(searchResult)
+        outputString = ""
+        for i in range(numOfResults):
+            for j in searchResult[i]:
+                outputString = outputString + str(j) + " | "
+            outputString = outputString + "\n"
+
+        searchResultsWindow = tk.Tk()
+        searchResultsWindow.title('Results')
+        searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
+        searchResultsLabel.pack()
+
+
 
 def lowInventory():
     c.execute("SELECT * FROM items WHERE itemQty<=:itemQty", {'itemQty':2})
@@ -137,9 +157,14 @@ def lowInventory():
     lowStockLabel = tk.Label(lowStockWindow, text=results)
     lowStockLabel.pack()
 
-def salesAnalysis():
-    c.execute("SELECT *, SUM(itemPrice) FROM items GROUP BY itemName ORDER BY SUM(itemPrice) DESC")
-    print(c.fetchall())
+def profitPotential():
+    c.execute("SELECT SUM(wWorth) FROM items")
+    wVal = c.fetchone()[0]
+    c.execute("SELECT SUM(rWorth) FROM items")
+    rVal = c.fetchone()[0]
+    potentialProfit = rVal - wVal
+    print(potentialProfit)
+
 
 def removeItems(iName):
     with conn:
