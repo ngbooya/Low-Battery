@@ -37,7 +37,7 @@ class Item:
 
 
 #Open connection
-conn = sqlite3.connect('TEMP.db')
+conn = sqlite3.connect('MotherLoad.db')
 # #
 # # # Use cursor to run SQL commands
 c = conn.cursor()
@@ -54,10 +54,9 @@ def initializeTABLES():
                itemName text,
                itemNumber text,
                itemModel text,
-               date_created text,
-               date_sold text,
-               date_updated text,
-               weight real,
+               UPC text,
+               date_created datetime,
+               wholesalePrice real,
                itemPrice real,
                itemQty integer
                )""")
@@ -99,10 +98,10 @@ def get_emps_by_name(lastname):
 #                    WHERE first = :first AND last = :last""",
 #                    {'first': emp.first, 'last': emp.last, 'password':password})
 
-def remove_emp(emp):
+def remove_emp(fname, lname):
     with conn:
         c.execute("DELETE from employees WHERE first = :first and last = :last",
-                    {'first':emp.first, 'last':emp.last})
+                    {'first':fname, 'last':lname})
 
 def getEmailFromUsername(e):
     c.execute("SELECT email FROM employees WHERE username=:username",{'username':e})

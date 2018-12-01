@@ -2,8 +2,10 @@ import sqlite3
 import random
 import csv
 import tkinter as tk
+from Database_Test import initializeTABLES
+import datetime
 
-conn = sqlite3.connect('TEMP.db')
+conn = sqlite3.connect('MotherLoad.db')
 
 c = conn.cursor()
 
@@ -27,53 +29,104 @@ def initializeItemLocations():
         data = c.fetchall()
         print(data)
 
-#initializeItemLocations()
+# def initializeSoftware():
+#     c = conn.cursor()
+#
+#     c.execute("""CREATE TABLE employees(
+#                 first text,
+#                 last text,
+#                 username text,
+#                 password text,
+#                 email text
+#                 )""")
+#
+#     c.execute("""CREATE TABLE items(
+#                itemName text,
+#                itemNumber text,
+#                itemModel text,
+#                date_created text,
+#                date_sold text,
+#                date_updated text,
+#                weight real,
+#                itemPrice real,
+#                itemQty integer
+#                )""")
+#
+#     c.execute("""CREATE TABLE locations(
+#                 itemNumPrefix text,
+#                 available boolean,
+#                 numAvailable int
+#                 )""")
+#
+#     alpha = "ABCD"
+#     side = "12"
+#     bay = "XYZ"
+#     shelf = "1234"
+#     itemNum = ""
+#     c = conn.cursor()
+#     for a in alpha:
+#        for b in side:
+#            for cc in bay:
+#                for d in shelf:
+#                    itemNum = a+b+cc+d
+#                    with conn:
+#                        c.execute("INSERT INTO locations VALUES(:itemNumPrefix, :available ,:numAvailable)", {'itemNumPrefix': itemNum, 'available': True,'numAvailable': 10})
+#     with conn:
+#         c.execute("SELECT * FROM locations")
+#         data = c.fetchall()
+#         print(data)        # Attempt of Initialize Software Function
 
-def insertItem(name, model, quantity, wPrice, rPrice):
-    conn = sqlite3.connect('TEMP.db')
+# initializeItemLocations()
+
+def insertItem(name, model, upc, quantity, wPrice, rPrice):
+    conn = sqlite3.connect('MotherLoad.db')
     c = conn.cursor()
-    c.execute("SELECT itemNumPrefix FROM locations WHERE numAvailable>=:numAvailable",{'numAvailable':quantity    })
+    c.execute("SELECT itemNumPrefix FROM locations WHERE numAvailable>=:numAvailable",{'numAvailable':quantity})
     itemLocationList = c.fetchone()
     itemLocation = itemLocationList[0]
-    print("Item location is of type: ", type(itemLocation))
     c.execute("SELECT numAvailable FROM locations WHERE itemNumPrefix=:itemNumPrefix",{'itemNumPrefix':itemLocation})
     availabilityAtLocation = c.fetchone()[0]
-
+    current_date = datetime.datetime.now().strftime("%m-%d-%y")
     with conn:
-        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :date_created, :date_sold, :date_updated, :weight, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation, 'itemModel':model, 'date_created': "10-18-2018", 'date_sold': "11-16-2018", 'date_updated':"10-18-2018", 'weight': 1.12, 'itemPrice': rPrice, 'itemQty':quantity})
+        c.execute("INSERT INTO items VALUES(:itemName, :itemNumber, :itemModel, :UPC, :date_created, :wholesalePrice, :itemPrice, :itemQty)",{'itemName': name, 'itemNumber':itemLocation, 'itemModel':model, 'UPC':upc, 'date_created': current_date, 'wholesalePrice': wPrice, 'itemPrice': rPrice, 'itemQty':quantity})
         conn.commit()
     conn.close()
 
 #    c.execute("SELECT * FROM items")
     # print(c.fetchall())
-    conn = sqlite3.connect('TEMP.db')
+    conn = sqlite3.connect('MotherLoad.db')
     c = conn.cursor()
     updatedAvailability = int(availabilityAtLocation) - int(quantity)
     updateAvailability(itemLocation, updatedAvailability)
     conn.close()
-    
+
 def updateAvailability(itemLoc, updatedAvail):
     with conn:
             c.execute("""UPDATE locations SET numAvailable=:numAvailable WHERE itemNumPrefix=:itemNumPrefix""",{'numAvailable':updatedAvail, 'itemNumPrefix':itemLoc})
             conn.commit()
 
-        
+
 
 def exportCSV():
     with conn:
         csvWriter = csv.writer(open("output.csv", "w"))
         c.execute("SELECT * FROM items")
         rows = c.fetchall()
-
         csvWriter.writerows(rows)
 
 def searchItem(iName):
     c.execute("SELECT * FROM items WHERE itemName=:itemName", {'itemName': iName})
     searchResult = c.fetchall()
+    numOfResults = len(searchResult)
+    outputString = ""
+    for i in range(numOfResults):
+        for j in searchResult[i]:
+            outputString = outputString + str(j) + " | "
+        outputString = outputString + "\n"
 
     searchResultsWindow = tk.Tk()
     searchResultsWindow.title('Results')
-    searchResultsLabel = tk.Label(searchResultsWindow, text=searchResult)
+    searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
     searchResultsLabel.pack()
 
 def lowInventory():
