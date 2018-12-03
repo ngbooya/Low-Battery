@@ -10,7 +10,6 @@ import smtplib
 import random
 import datetime
 
-
 def launchHelp():
     webbrowser.open("https://docs.google.com/document/d/1kUjoFj0fahQyfj-kG5momyv6hu3HBzEFU0M06jL1kuw/edit?usp=sharing")
 
@@ -114,7 +113,6 @@ class LogIn(tk.Frame):
         button3.pack(pady=2)
         # button3.grid(ipady=2, row=5, column=1)
         button4.pack(pady=2)
-        # button4.grid(ipady=2, row=6, column=1)
 
 class ChangePassword(tk.Frame):
 
@@ -351,8 +349,20 @@ class TimeClock(tk.Frame):
             timeStampWindow = tk.Tk()
             timeStampLabel = tk.Label(timeStampWindow, text=timeStamp)
             timeStampLabel.pack()
-#            print("Your timestamp is: ", now.strftime("%H:%M:%S"))
             controller.show_frame("HomePage")
+
+            hour = str(now.hour)
+            minute = str(now.minute)
+            stamp = hour + ":" + minute
+            today = datetime.datetime.now().strftime("%m-%d-%y")
+            print(stamp, today)
+            #insertTime(hour, minute, today):
+                # query username and todays date
+                # if none
+                #     insert username, date, timeIn
+                # else
+                #     insert timeOut
+
 
         timeIn = tk.Button(self, text="Clock In", font=controller.title_font,
                            command=timeStamp)
