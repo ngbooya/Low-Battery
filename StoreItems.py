@@ -162,8 +162,13 @@ def profitPotential():
     wVal = c.fetchone()[0]
     c.execute("SELECT SUM(rWorth) FROM items")
     rVal = c.fetchone()[0]
-    potentialProfit = rVal - wVal
-    print(potentialProfit)
+    potentialProfit = round(rVal,2) - round(wVal,2)
+    print(round(potentialProfit,2))
+    ppWindow = tk.Tk()
+    printOut = "Your warehouse inventory is worth: $" + str(round(wVal,2)) + "\n" + "Retail value is: $" + str(round(rVal,2)) + "\n" + "\nProfit Potential is: $" + str(round(potentialProfit,2))
+    ppMessage = tk.Message(ppWindow, text=printOut, width=400)
+    ppMessage.pack()
+
 
 
 def removeItems(iName):

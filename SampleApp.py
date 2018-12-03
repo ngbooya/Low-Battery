@@ -69,19 +69,22 @@ class LogIn(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        def enter(event=None):
+            callback()
         userNameLabel = tk.Label(self, text="Username", font=controller.title_font)
-        # userNameLabel.pack(side="top", fill="x", pady=10)
-        userNameLabel.grid(row=0, column=0, pady=10)
+        userNameLabel.pack(side="top", fill="x", pady=10)
+        # userNameLabel.grid(row=0, column=0, pady=10)
         userNameLabel = tk.Entry(self)
-        # userNameLabel.pack()
-        userNameLabel.grid(row=0, column=1, pady=10)
+        userNameLabel.pack()
+        # userNameLabel.grid(row=0, column=1, pady=10)
 
         userPasswordLabel = tk.Label(self, text="Password", font=controller.title_font)
-        # userPasswordLabel.pack(side="top", fill="x", pady=10)
-        userPasswordLabel.grid(row=1, column=0, pady=10, sticky='e')
+        userPasswordLabel.pack(side="top", fill="x", pady=10)
+        # userPasswordLabel.grid(row=1, column=0, pady=10, sticky='e')
         userPasswordLabel = tk.Entry(self, show="*")
-        # userPasswordLabel.pack()
-        userPasswordLabel.grid(row=1, column=1, pady=10)
+        userPasswordLabel.bind('<Return>',enter)
+        userPasswordLabel.pack()
+        # userPasswordLabel.grid(row=1, column=1, pady=10)
 
 
         wrongPasswordLabel = tk.Label(self, text="Incorrect username and/or password.")
@@ -108,7 +111,7 @@ class LogIn(tk.Frame):
             userNameLabel.delete(0,END)
             userPasswordLabel.delete(0,END)
 
-        button1 = tk.Button(self, text="Login", command=callback)
+        button1 = tk.Button(self, text="Login", command=enter)
 
         button2 = tk.Button(self, text="New User",
                             command=lambda: controller.show_frame("AccountCreate"))
@@ -116,14 +119,14 @@ class LogIn(tk.Frame):
                             command=lambda: controller.show_frame("ForgotPass"))
         button4 = tk.Button(self, text="Change Password",
                             command=lambda: controller.show_frame("ChangePassword"))
-        # button1.pack(pady=2)
-        button1.grid(ipady=2, row=3, column=1)
-        # button2.pack(pady=2)
-        button2.grid(ipady=2, row=4, column=1)
-        # button3.pack(pady=2)
-        button3.grid(ipady=2, row=5, column=1)
-        # button4.pack(pady=2)
-        button4.grid(ipady=2, row=6, column=1)
+        button1.pack(pady=2)
+        # button1.grid(ipady=2, row=3, column=1)
+        button2.pack(pady=2)
+        # button2.grid(ipady=2, row=4, column=1)
+        button3.pack(pady=2)
+        # button3.grid(ipady=2, row=5, column=1)
+        button4.pack(pady=2)
+        # button4.grid(ipady=2, row=6, column=1)
 
 class ChangePassword(tk.Frame):
 
@@ -317,7 +320,7 @@ class ViewAll(tk.Frame):
             i = 1
             allEmployees = ""
             with conn:
-                    c.execute("SELECT * FROM employees")
+                    c.execute("SELECT first, last, username, email FROM employees")
                     data = c.fetchall()
                     textEmployeeFile = open("employeeInfo.txt",'w')
                     textEmployeeFile.close()
@@ -441,7 +444,8 @@ class Search(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
+        def enter(event=None):
+            callback()
         itemNameLabel = tk.Label(self, text="Item Name", font=controller.title_font)
         itemNameLabel.pack(side="top", fill="x", pady=10)
         itemNameLabel = tk.Entry(self)
@@ -450,6 +454,7 @@ class Search(tk.Frame):
         UPCLabel = tk.Label(self, text="UPC", font=controller.title_font)
         UPCLabel.pack(side="top", fill="x", pady=10)
         UPCLabel = tk.Entry(self)
+        UPCLabel.bind('<Return>',enter)
         UPCLabel.pack()
 
         def callback():
