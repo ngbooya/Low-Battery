@@ -50,6 +50,15 @@ def initializeTABLES():
                 email text
                 )""")
 
+    c.execute("""CREATE TABLE timesheet(
+            username text,
+            date datetime,
+            clockInHour int,
+            clockInMinute int,
+            clockOutHour int,
+            clockOutMinute
+            )""")
+
     c.execute("""CREATE TABLE items(
                itemName text,
                itemNumber text,

@@ -10,23 +10,6 @@ import smtplib
 import random
 import datetime
 
-#import Tkinter as tk     # python 2
-#import tkFont as tkfont  # python 2
-
-# aisle = "ABCD"
-# side = "12"
-# bay = "XYZ"
-# shelf = "1234"
-# stockNumberList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-# itemNumber = ''
-# dictionary = {}
-# for w in aisle:
-#     for x in side:
-#         for y in bay:
-#             for z in shelf:
-#                 for s in stockNumberList:
-#                     itemNumber = w + x + y + z + "-" + str(s)
-#                     dictionary[itemNumber]= 10 #dictionary returns number of available spaces; zero = Full
 
 def launchHelp():
     webbrowser.open("https://docs.google.com/document/d/1kUjoFj0fahQyfj-kG5momyv6hu3HBzEFU0M06jL1kuw/edit?usp=sharing")
