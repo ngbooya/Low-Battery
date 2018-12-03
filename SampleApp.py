@@ -46,6 +46,9 @@ class SampleApp(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
+        self.CURRENT_USER = None
+        print("CURRENT USER STATUS", self.CURRENT_USER)
+
         self.frames = {}
         for F in (LogIn, HomePage, AccountCreate, ForgotPass, ChangePassword, ViewAll, TimeClock, AddItem, Delete ,InventoryAudit, Search, Separation, Email):
             page_name = F.__name__
@@ -107,6 +110,8 @@ class LogIn(tk.Frame):
         def callback():
             verify()
             if(userAuthentication(userNameLabel.get(),userPasswordLabel.get())):
+                CURRENT_USER = userNameLabel.get()
+                print("CURRENT USER STATUS", CURRENT_USER)
                 controller.show_frame("HomePage")
             userNameLabel.delete(0,END)
             userPasswordLabel.delete(0,END)
@@ -205,10 +210,11 @@ class HomePage(tk.Frame):
                           command=profitPotential)
         ProfitButton.pack(padx=20, pady=10, fill='x')
 
-
-
-        button = tk.Button(self, text="Logout",
-                           command=lambda: controller.show_frame("LogIn"))
+        def logoutCallback():
+            CURRENT_USER = None;
+            print("CURRENT USER STATUS", CURRENT_USER)
+            controller.show_frame("LogIn")
+        button = tk.Button(self, text="Logout",command=logoutCallback)
         button.pack()
 
         helpButton = tk.Button(self, text="Help",
