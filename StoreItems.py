@@ -5,6 +5,7 @@ import tkinter as tk
 from Database_Test import initializeTABLES
 import datetime
 
+
 conn = sqlite3.connect('MotherLoad.db')
 
 c = conn.cursor()
@@ -29,52 +30,6 @@ def initializeItemLocations():
         data = c.fetchall()
         print(data)
 
-# def initializeSoftware():
-#     c = conn.cursor()
-#
-#     c.execute("""CREATE TABLE employees(
-#                 first text,
-#                 last text,
-#                 username text,
-#                 password text,
-#                 email text
-#                 )""")
-#
-#     c.execute("""CREATE TABLE items(
-#                itemName text,
-#                itemNumber text,
-#                itemModel text,
-#                date_created text,
-#                date_sold text,
-#                date_updated text,
-#                weight real,
-#                itemPrice real,
-#                itemQty integer
-#                )""")
-#
-#     c.execute("""CREATE TABLE locations(
-#                 itemNumPrefix text,
-#                 available boolean,
-#                 numAvailable int
-#                 )""")
-#
-#     alpha = "ABCD"
-#     side = "12"
-#     bay = "XYZ"
-#     shelf = "1234"
-#     itemNum = ""
-#     c = conn.cursor()
-#     for a in alpha:
-#        for b in side:
-#            for cc in bay:
-#                for d in shelf:
-#                    itemNum = a+b+cc+d
-#                    with conn:
-#                        c.execute("INSERT INTO locations VALUES(:itemNumPrefix, :available ,:numAvailable)", {'itemNumPrefix': itemNum, 'available': True,'numAvailable': 10})
-#     with conn:
-#         c.execute("SELECT * FROM locations")
-#         data = c.fetchall()
-#         print(data)        # Attempt of Initialize Software Function
 
 # initializeItemLocations()
 
@@ -106,8 +61,6 @@ def updateAvailability(itemLoc, updatedAvail):
     with conn:
             c.execute("""UPDATE locations SET numAvailable=:numAvailable WHERE itemNumPrefix=:itemNumPrefix""",{'numAvailable':updatedAvail, 'itemNumPrefix':itemLoc})
             conn.commit()
-
-
 
 def exportCSV():
     with conn:
@@ -147,8 +100,6 @@ def searchItem(iName,iUPC):
         searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
         searchResultsLabel.pack()
 
-
-
 def lowInventory():
     c.execute("SELECT * FROM items WHERE itemQty<=:itemQty", {'itemQty':2})
     results = c.fetchall()
@@ -168,8 +119,6 @@ def profitPotential():
     printOut = "Your warehouse inventory is worth: $" + str(round(wVal,2)) + "\n" + "Retail value is: $" + str(round(rVal,2)) + "\n" + "\nProfit Potential is: $" + str(round(potentialProfit,2))
     ppMessage = tk.Message(ppWindow, text=printOut, width=400)
     ppMessage.pack()
-
-
 
 def removeItems(iName):
     with conn:

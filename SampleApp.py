@@ -92,8 +92,8 @@ class LogIn(tk.Frame):
         def callback():
             verify()
             if(userAuthentication(userNameLabel.get(),userPasswordLabel.get())):
-                CURRENT_USER = userNameLabel.get()
-                print("CURRENT USER STATUS", CURRENT_USER)
+                controller.CURRENT_USER = userNameLabel.get()
+                print("CURRENT USER STATUS", controller.CURRENT_USER)
                 controller.show_frame("HomePage")
             userNameLabel.delete(0,END)
             userPasswordLabel.delete(0,END)
@@ -192,8 +192,8 @@ class HomePage(tk.Frame):
         ProfitButton.pack(padx=20, pady=10, fill='x')
 
         def logoutCallback():
-            CURRENT_USER = None;
-            print("CURRENT USER STATUS", CURRENT_USER)
+            controller.CURRENT_USER = None;
+            print("CURRENT USER STATUS", controller.CURRENT_USER)
             controller.show_frame("LogIn")
         button = tk.Button(self, text="Logout",command=logoutCallback)
         button.pack()
@@ -341,7 +341,9 @@ class TimeClock(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        now = datetime.datetime.now()
 
+        #Don't need#################################################
         def timeStamp():
             now = datetime.datetime.now()
             datetime.time(now.hour, now.minute, now.second)
@@ -351,11 +353,47 @@ class TimeClock(tk.Frame):
             timeStampLabel.pack()
             controller.show_frame("HomePage")
 
+            date = datetime.datetime.now().strftime("%m-%d-%y")
             hour = str(now.hour)
             minute = str(now.minute)
-            stamp = hour + ":" + minute
-            today = datetime.datetime.now().strftime("%m-%d-%y")
-            print(stamp, today)
+            time = hour + ":" + minute
+
+            print(date, time)
+
+        def timeIn():
+
+            hour = str(now.hour)
+            minute = str(now.minute)
+            time = hour + ":" + minute
+            date = datetime.datetime.now().strftime("%m-%d-%y")
+            with conn:
+                c.execute("INSERT INTO timesheet VALUES(:username, :work_date, :clockInTime, :clockOutTime)", {'username':controller.CURRENT_USER, 'work_date':date, 'clockInTime':time, 'clockOutTime':""})
+            # c.execute("SELECT * FROM timesheet")
+            # print(c.fetchall())
+            csvWriter = csv.writer(open("timesheet.csv", "w"))
+            c.execute("SELECT * FROM timesheet")
+            rows = c.fetchall()
+            csvWriter.writerows(rows)
+
+        def timeOut():
+            currentUser = controller.CURRENT_USER
+            date = datetime.datetime.now().strftime("%m-%d-%y")
+            hour = str(now.hour)
+            minute = str(now.minute)
+            time = hour + ":" + minute
+
+            with conn:
+                c.execute("UPDATE timesheet SET clockOutTime=:clockOutTime WHERE username=:username AND work_date=:work_date", {'clockOutTime':time, 'username':controller.CURRENT_USER, 'work_date':date})
+                conn.commit()
+            csvWriter = csv.writer(open("timesheet.csv", "w"))
+            c.execute("SELECT * FROM timesheet")
+            rows = c.fetchall()
+            csvWriter.writerows(rows)
+
+
+
+
+
             #insertTime(hour, minute, today):
                 # query username and todays date
                 # if none
@@ -365,11 +403,11 @@ class TimeClock(tk.Frame):
 
 
         timeIn = tk.Button(self, text="Clock In", font=controller.title_font,
-                           command=timeStamp)
+                           command=timeIn)
         timeIn.pack()
 
         timeOut = tk.Button(self, text="Clock Out", font=controller.title_font,
-                           command=timeStamp)
+                           command=timeOut)
         timeOut.pack()
 
 class AddItem(tk.Frame):

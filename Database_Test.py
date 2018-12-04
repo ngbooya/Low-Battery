@@ -1,4 +1,6 @@
 import sqlite3
+import csv
+
 
 class Employee:
 
@@ -27,13 +29,6 @@ class Item:
         self.wPrice = wPrice
         self.rPrice= rPrice
 
-#    def email(self):
-#        return '{} {}@email.com'.format(self.first, self.last)
-#
-#    def fullname(self):
-#        return '{} {}'.format(self.first, self.last)
-#    def __repr__(self):
-#        return "Employee('{}','{}','{}')".format(self.first, self.last,self.username, self.password, self.email)
 
 
 #Open connection
@@ -52,11 +47,9 @@ def initializeTABLES():
 
     c.execute("""CREATE TABLE timesheet(
             username text,
-            date datetime,
-            clockInHour int,
-            clockInMinute int,
-            clockOutHour int,
-            clockOutMinute
+            work_date datetime,
+            clockInTime text,
+            clockOutTime text
             )""")
 
     c.execute("""CREATE TABLE items(
@@ -78,7 +71,7 @@ def initializeTABLES():
                 numAvailable int
                 )""")
 # initializeTABLES()
-
+#
 
 
 def insert_emp(emp):
@@ -86,9 +79,6 @@ def insert_emp(emp):
         c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email })
 
 def userAuthentication(uname, pword):
-    # status = c.execute("SELECT EXISTS(SELECT * FROM employees WHERE username=:username AND password=:password)", {'username':uname, 'password':pword})
-    #
-    # return status
 
     c.execute("SELECT * FROM employees WHERE username=:username and password=:password", {'username':uname, 'password':pword})
     data=c.fetchall()
@@ -103,11 +93,6 @@ def get_emps_by_name(lastname):
 
     return c.fetchall()
 
-# def update_password(emp, password):
-#    with conn:
-#        c.execute("""UPDATE employees SET password = :password
-#                    WHERE first = :first AND last = :last""",
-#                    {'first': emp.first, 'last': emp.last, 'password':password})
 
 def remove_emp(fname, lname):
     with conn:
@@ -117,6 +102,3 @@ def remove_emp(fname, lname):
 def getEmailFromUsername(e):
     c.execute("SELECT email FROM employees WHERE username=:username",{'username':e})
     return c.fetchall()
-
-
-#conn.close()
