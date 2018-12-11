@@ -256,9 +256,6 @@ class AccountCreate(tk.Frame):
             manager = managerEntry.get().upper()
             emp1 = Employee(fName,lName,uName, pWord, eMail, manager)
             insert_emp(emp1)
-            creationSuccessWindow = tk.Tk()
-            creationSuccessLabel = tk.Label(creationSuccessWindow, text="Account Created Successfully")
-            creationSuccessLabel.pack()
             FirstName_Label.delete(0,END)
             LastName_Label.delete(0,END)
             UserName_Label.delete(0,END)
@@ -605,7 +602,7 @@ class Email(tk.Frame):
 
         messageLabel = tk.Label(self, text="Enter your message below", font=controller.title_font)
         messageLabel.pack()
-        messageEntry = tk.Entry(self)
+        messageEntry = tk.Text(self, wrap=WORD, bg='black', fg='white', relief=RIDGE, width=30)
         messageEntry.pack()
 
         def viewSingleEmail():
@@ -625,14 +622,14 @@ class Email(tk.Frame):
                 employeesWindow = tk.Tk()
                 employeesWindowText = tk.Text(employeesWindow)
                 employeesWindowText.insert(INSERT, emailAddress)
-                employeesWindowText.pack(fill="none", expand=TRUE)
+                employeesWindowText.pack()
                 successLabel = tk.Label(self, text="", font=controller.title_font)
                 successLabel.pack()
                 fnameEntry.delete(0,END)
                 lnameEntry.delete(0,END)
 
         def sendEmail(list):
-            if(messageEntry.get()==""):
+            if(messageEntry.get("1.0", END)==" "):
                 errorWindow = tk.Tk()
                 errorWindowLabel = tk.Text(errorWindow)
                 errorWindowLabel.insert(INSERT, "No message entered. Fill in message field.")
@@ -642,7 +639,7 @@ class Email(tk.Frame):
             else:
                 server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
                 server.login("lowbattery362@gmail.com", "longestpasswordever")
-                server.sendmail("lowbattery362@gmail.com", list, messageEntry.get())
+                server.sendmail("lowbattery362@gmail.com", list, messageEntry.get("1.0", END))
                 server.quit()
                 print(list)
 
@@ -658,11 +655,11 @@ class Email(tk.Frame):
                 # mailingList = mailingList + i[0] + ","
                 k = k + 1
             employeesWindow = tk.Tk()
-            employeesWindowText = tk.Text(employeesWindow, wrap=WORD)
+            employeesWindowText = tk.Text(employeesWindow)
             employeesWindowText.insert(INSERT, masterListString)
-            employeesWindowText.pack(fill="none", expand=TRUE, wrap=WORD)
+            employeesWindowText.pack()
             sendEmail(emailAddress)
-            messageEntry.delete(0,END)
+            messageEntry.delete("1.0",END)
 
 
 
