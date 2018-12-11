@@ -318,26 +318,41 @@ class ViewAll(tk.Frame):
         def viewAllEmployees():
             i = 1
             allEmployees = ""
+            # with conn:
+            #         c.execute("SELECT first, last, username, email, manager FROM employees")
+            #         data = c.fetchall()
+            #         textEmployeeFile = open("employeeInfo.txt",'w')
+            #         textEmployeeFile.close()
+            #         for row in data:
+            #             textEmployeeFile = open("employeeInfo.txt",'a')
+            #             textEmployeeFile.write("\nEmployee:" + str(i) + "\n")
+            #             for j in row:
+            #                     textEmployeeFile.write("\t" + str(j) + "\n")
+            #             i += 1
+            #         textEmployeeFile.close()
+            #         controller.show_frame("HomePage")
+            #
+            #         employeesWindow = tk.Tk()
+            #         employeesWindowText = tk.Text(employeesWindow)
+            #         fileContents = open("employeeInfo.txt", 'r')
+            #         textFromFile = fileContents.readlines()
+            #         print (textFromFile)
+            #         employeesWindowText.insert(INSERT, textFromFile)
+            #         employeesWindowText.pack(fill="none", expand=TRUE)
             with conn:
                     c.execute("SELECT first, last, username, email, manager FROM employees")
                     data = c.fetchall()
-                    textEmployeeFile = open("employeeInfo.txt",'w')
-                    textEmployeeFile.close()
+                    masterString = ""
                     for row in data:
-                        textEmployeeFile = open("employeeInfo.txt",'a')
-                        textEmployeeFile.write("\nEmployee:" + str(i) + "\n")
+                        masterString = masterString + ("\nEmployee:" + str(i) + "\n")
                         for j in row:
-                                textEmployeeFile.write("\t" + str(j) + "\n")
+                                masterString = masterString + ("\t" + str(j) + "\n")
                         i += 1
-                    textEmployeeFile.close()
                     controller.show_frame("HomePage")
 
                     employeesWindow = tk.Tk()
                     employeesWindowText = tk.Text(employeesWindow)
-                    fileContents = open("employeeInfo.txt", 'r')
-                    textFromFile = fileContents.readlines()
-                    print (textFromFile)
-                    employeesWindowText.insert(INSERT, textFromFile)
+                    employeesWindowText.insert(INSERT, masterString)
                     employeesWindowText.pack(fill="none", expand=TRUE)
 
         button = tk.Button(self, text="View",
@@ -602,7 +617,7 @@ class Email(tk.Frame):
 
         messageLabel = tk.Label(self, text="Enter your message below", font=controller.title_font)
         messageLabel.pack()
-        messageEntry = tk.Text(self, wrap=WORD, bg='black', fg='white', relief=RIDGE, width=30)
+        messageEntry = tk.Text(self, wrap=WORD, bg='black', fg='white', relief=RIDGE, width=32)
         messageEntry.pack()
 
         def viewSingleEmail():
