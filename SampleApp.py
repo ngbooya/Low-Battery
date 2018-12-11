@@ -1,6 +1,7 @@
 import tkinter as tk                # python 3
 from tkinter import font  as tkfont # python 3
 from tkinter import *
+from tkinter import ttk
 import webbrowser
 
 # Import databases for query use
@@ -66,14 +67,14 @@ class LogIn(tk.Frame):
         userNameLabel = tk.Label(self, text="Username", font=controller.title_font)
         userNameLabel.pack(side="top", fill="x", pady=10)
         # userNameLabel.grid(row=0, column=0, pady=10)
-        userNameLabel = tk.Entry(self)
+        userNameLabel = ttk.Entry(self)
         userNameLabel.pack()
         # userNameLabel.grid(row=0, column=1, pady=10)
 
         userPasswordLabel = tk.Label(self, text="Password", font=controller.title_font)
         userPasswordLabel.pack(side="top", fill="x", pady=10)
         # userPasswordLabel.grid(row=1, column=0, pady=10, sticky='e')
-        userPasswordLabel = tk.Entry(self, show="*")
+        userPasswordLabel = ttk.Entry(self, show="*")
         userPasswordLabel.bind('<Return>',enter)
         userPasswordLabel.pack()
         # userPasswordLabel.grid(row=1, column=1, pady=10)
@@ -114,13 +115,13 @@ class LogIn(tk.Frame):
             userNameLabel.delete(0,END)
             userPasswordLabel.delete(0,END)
 
-        button1 = tk.Button(self, text="Login", command=enter)
+        button1 = ttk.Button(self, text="Login", command=enter)
 
-        button2 = tk.Button(self, text="New User",
+        button2 = ttk.Button(self, text="New User",
                             command=lambda: controller.show_frame("AccountCreate"))
-        button3 = tk.Button(self, text="Forgot Password",
+        button3 = ttk.Button(self, text="Forgot Password",
                             command=lambda: controller.show_frame("ForgotPass"))
-        button4 = tk.Button(self, text="Change Password",
+        button4 = ttk.Button(self, text="Change Password",
                             command=lambda: controller.show_frame("ChangePassword"))
         button1.pack(pady=2)
         # button1.grid(ipady=2, row=3, column=1)
@@ -130,7 +131,7 @@ class LogIn(tk.Frame):
         # button3.grid(ipady=2, row=5, column=1)
         button4.pack(pady=2)
 
-        installButton = tk.Button(self, text="Install Database", command=install)
+        installButton = ttk.Button(self, text="Install Database", command=install)
         installButton.pack()
 
 
@@ -171,52 +172,64 @@ class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        addItemButton = tk.Button(self, text="Add Item", font=controller.title_font,
-                                  command=lambda: controller.show_frame("AddItem"))
-        addItemButton.pack(padx=20, pady=10, fill='x')
 
-        searchLabel = tk.Button(self, text="Search Items", font=controller.title_font,
+        tabControl = ttk.Notebook(self)
+        tab1 = ttk.Frame(tabControl)
+        tabControl.add(tab1, text="Invetory Control")
+
+
+        tab2 = ttk.Frame(tabControl)
+        tabControl.add(tab2, text = "Admin")
+
+        tabControl.pack(expan=1, fill="both")
+
+        addItemButton = tk.Button(tab1, text="Add Item", font=controller.title_font,command=lambda:controller.show_frame("AddItem"))
+        # addItemButton.pack(padx=20, pady=10, fill='x')
+        addItemButton.pack(pady=5)
+
+
+        searchLabel = tk.Button(tab1, text="Search Items", font=controller.title_font,
                                 command = lambda: controller.show_frame("Search"))
-        searchLabel.pack(padx=20, pady=10, fill='x')
+        searchLabel.pack(padx=20, pady=10)
 
-        deleteLabel = tk.Button(self, text="Remove Item", font=controller.title_font, command = lambda: controller.show_frame("Delete"))
-        deleteLabel.pack(padx=20, pady=10, fill='x')
+        deleteLabel = tk.Button(tab1, text="Remove Item", font=controller.title_font, command = lambda: controller.show_frame("Delete"))
+        deleteLabel.pack(padx=20, pady=10)
 
-        lowStock = tk.Button(self, text="Low Stock Items", font=controller.title_font, command=lowInventory)
-        lowStock.pack(padx=20, pady=10, fill='x')
+        lowStock = tk.Button(tab1, text="Low Stock Items", font=controller.title_font, command=lowInventory)
+        lowStock.pack(padx=20, pady=10)
 
-        auditButton = tk.Button(self, text="Inventory Audit", font=controller.title_font,
+        auditButton = tk.Button(tab2, text="Inventory Audit", font=controller.title_font,
                                   command=exportCSV)
-        auditButton.pack(padx=20, pady=10, fill='x')
+        auditButton.pack(padx=20, pady=10)
 
-        viewAllButton = tk.Button(self, text="View All Employees", font=controller.title_font,
+        viewAllButton = tk.Button(tab2, text="View All Employees", font=controller.title_font,
                                   command=lambda: controller.show_frame("ViewAll"))
         #viewAllLabel.pack(side="top", fill="x", pady=10)
-        viewAllButton.pack(padx=20, pady=10, fill='x')
+        viewAllButton.pack(padx=20, pady=10)
 
-        termEmp = tk.Button(self, text="Terminate Employee", font=controller.title_font,
+        termEmp = tk.Button(tab2, text="Terminate Employee", font=controller.title_font,
                           command=lambda: controller.show_frame("Separation"))
-        termEmp.pack(padx=20, pady=10, fill='x')
+        termEmp.pack(padx=20, pady=10)
 
 
-        timeClock = tk.Button(self, text="Clock In/Out", font=controller.title_font,
+        timeClock = tk.Button(tab2, text="Clock In/Out", font=controller.title_font,
                                   command=lambda: controller.show_frame("TimeClock"))
-        timeClock.pack(padx=20, pady=10, fill='x')
+        timeClock.pack(padx=20, pady=10)
 
-        email = tk.Button(self, text="Employee Email", font=controller.title_font,
+        email = tk.Button(tab2, text="Employee Email", font=controller.title_font,
                           command=lambda: controller.show_frame("Email"))
-        email.pack(padx=20, pady=10, fill='x')
+        email.pack(padx=20, pady=10)
 
-        ProfitButton = tk.Button(self, text="Profit Potential", font=controller.title_font,
+        ProfitButton = tk.Button(tab2, text="Profit Potential", font=controller.title_font,
                           command=profitPotential)
-        ProfitButton.pack(padx=20, pady=10, fill='x')
+        ProfitButton.pack(padx=20, pady=10)
 
         def logoutCallback():
             controller.CURRENT_USER = None
             controller.EMP_STATUS = None
             print("CURRENT USER STATUS", controller.CURRENT_USER)
             print("CURRENT EMP STATUS", controller.EMP_STATUS)
-            
+
             controller.show_frame("LogIn")
         button = tk.Button(self, text="Logout",command=logoutCallback)
         button.pack()
