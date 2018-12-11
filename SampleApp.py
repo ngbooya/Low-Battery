@@ -100,6 +100,7 @@ class LogIn(tk.Frame):
                 controller.CURRENT_USER = userNameLabel.get()
                 print("CURRENT USER STATUS", controller.CURRENT_USER)
                 controller.show_frame("HomePage")
+                wrongPasswordLabel.pack_forget()
             userNameLabel.delete(0,END)
             userPasswordLabel.delete(0,END)
 
@@ -121,6 +122,7 @@ class LogIn(tk.Frame):
 
         installButton = tk.Button(self, text="Install Database", command=install)
         installButton.pack()
+
 
 class ChangePassword(tk.Frame):
 
@@ -159,7 +161,6 @@ class HomePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-
         addItemButton = tk.Button(self, text="Add Item", font=controller.title_font,
                                   command=lambda: controller.show_frame("AddItem"))
         addItemButton.pack(padx=20, pady=10, fill='x')
