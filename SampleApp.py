@@ -11,7 +11,11 @@ import random
 import datetime
 
 def launchHelp():
-    webbrowser.open("https://docs.google.com/document/d/1kUjoFj0fahQyfj-kG5momyv6hu3HBzEFU0M06jL1kuw/edit?usp=sharing")
+    webbrowser.open("https://drive.google.com/open?id=1qbiw4POe3WmgU13DojmZ2ZUwfVk1GCcW")
+
+def install():
+    initializeTABLES()
+    initializeItemLocations()
 
 class SampleApp(tk.Tk):
 
@@ -54,6 +58,7 @@ class LogIn(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        controller.title('Low Battery')
         def enter(event=None):
             callback()
         userNameLabel = tk.Label(self, text="Username", font=controller.title_font)
@@ -113,6 +118,9 @@ class LogIn(tk.Frame):
         button3.pack(pady=2)
         # button3.grid(ipady=2, row=5, column=1)
         button4.pack(pady=2)
+
+        installButton = tk.Button(self, text="Install Database", command=install)
+        installButton.pack()
 
 class ChangePassword(tk.Frame):
 
@@ -233,6 +241,11 @@ class AccountCreate(tk.Frame):
         Email_Label = tk.Entry(self)
         Email_Label.pack()
 
+        managerLabel = tk.Label(self, text="Manager? (Yes/No)", font=controller.title_font)
+        managerLabel.pack(side="top", fill="x", pady=10)
+        managerEntry = tk.Entry(self)
+        managerEntry.pack()
+
         # Saves new user information into database
         def getUserInfo():
             fName = FirstName_Label.get()
@@ -240,7 +253,8 @@ class AccountCreate(tk.Frame):
             uName = UserName_Label.get()
             pWord = Password_Label.get()
             eMail = Email_Label.get()
-            emp1 = Employee(fName,lName,uName, pWord, eMail)
+            manager = managerEntry.get().upper()
+            emp1 = Employee(fName,lName,uName, pWord, eMail, manager)
             insert_emp(emp1)
             creationSuccessWindow = tk.Tk()
             creationSuccessLabel = tk.Label(creationSuccessWindow, text="Account Created Successfully")
@@ -250,6 +264,7 @@ class AccountCreate(tk.Frame):
             UserName_Label.delete(0,END)
             Password_Label.delete(0,END)
             Email_Label.delete(0,END)
+            managerEntry.delete(0,END)
 
         SubmitButton = tk.Button(self, text="Submit", command=getUserInfo)
         SubmitButton.pack()
@@ -307,19 +322,15 @@ class ViewAll(tk.Frame):
             i = 1
             allEmployees = ""
             with conn:
-                    c.execute("SELECT first, last, username, email FROM employees")
+                    c.execute("SELECT first, last, username, email, manager FROM employees")
                     data = c.fetchall()
                     textEmployeeFile = open("employeeInfo.txt",'w')
                     textEmployeeFile.close()
                     for row in data:
-#                        allEmployees = "\nEmployee:" + str(i)
                         textEmployeeFile = open("employeeInfo.txt",'a')
                         textEmployeeFile.write("\nEmployee:" + str(i) + "\n")
-#                        print(allEmployees)
                         for j in row:
-#                            allEmployees = "\t" + str(j)
                                 textEmployeeFile.write("\t" + str(j) + "\n")
-#                            print(allEmployees)
                         i += 1
                     textEmployeeFile.close()
                     controller.show_frame("HomePage")
@@ -361,54 +372,45 @@ class TimeClock(tk.Frame):
             print(date, time)
 
         def timeIn():
-
-            hour = str(now.hour)
-            minute = str(now.minute)
-            time = hour + ":" + minute
-            date = datetime.datetime.now().strftime("%m-%d-%y")
-            with conn:
-                c.execute("INSERT INTO timesheet VALUES(:username, :work_date, :clockInTime, :clockOutTime)", {'username':controller.CURRENT_USER, 'work_date':date, 'clockInTime':time, 'clockOutTime':""})
-            # c.execute("SELECT * FROM timesheet")
-            # print(c.fetchall())
-            csvWriter = csv.writer(open("timesheet.csv", "w"))
-            c.execute("SELECT * FROM timesheet")
-            rows = c.fetchall()
-            csvWriter.writerows(rows)
-
-        def timeOut():
             currentUser = controller.CURRENT_USER
+            now = datetime.datetime.now()
+            datetime.time(now.hour, now.minute, now.second)
+            timeStamp = now.strftime("%H:%M:%S")
             date = datetime.datetime.now().strftime("%m-%d-%y")
-            hour = str(now.hour)
-            minute = str(now.minute)
-            time = hour + ":" + minute
-
             with conn:
-                c.execute("UPDATE timesheet SET clockOutTime=:clockOutTime WHERE username=:username AND work_date=:work_date", {'clockOutTime':time, 'username':controller.CURRENT_USER, 'work_date':date})
+                c.execute("INSERT INTO timesheet VALUES(:username, :work_date, :clockInTime, :clockOutTime)", {'username':controller.CURRENT_USER, 'work_date':date, 'clockInTime':timeStamp, 'clockOutTime':""})
                 conn.commit()
             csvWriter = csv.writer(open("timesheet.csv", "w"))
             c.execute("SELECT * FROM timesheet")
             rows = c.fetchall()
             csvWriter.writerows(rows)
+            controller.show_frame("HomePage")
+            timeIn = ""
+
+        def timeOut():
+            currentUser = controller.CURRENT_USER
+            now = datetime.datetime.now()
+            datetime.time(now.hour, now.minute, now.second)
+            timeStamp = now.strftime("%H:%M:%S")
+            dateOut = datetime.datetime.now().strftime("%m-%d-%y")
+
+            with conn:
+                c.execute("UPDATE timesheet SET clockOutTime=:clockOutTime WHERE username=:username AND work_date=:work_date", {'clockOutTime':timeStamp, 'username':controller.CURRENT_USER, 'work_date':dateOut})
+                conn.commit()
+            csvWriter = csv.writer(open("timesheet.csv", "w"))
+            c.execute("SELECT * FROM timesheet")
+            rows = c.fetchall()
+            csvWriter.writerows(rows)
+            controller.show_frame("HomePage")
 
 
-
-
-
-            #insertTime(hour, minute, today):
-                # query username and todays date
-                # if none
-                #     insert username, date, timeIn
-                # else
-                #     insert timeOut
-
-
-        timeIn = tk.Button(self, text="Clock In", font=controller.title_font,
+        timeIn = tk.Button(self, text="Clock In", bg='green', font=controller.title_font,
                            command=timeIn)
-        timeIn.pack()
+        timeIn.pack(expand=TRUE, fill=BOTH)
 
-        timeOut = tk.Button(self, text="Clock Out", font=controller.title_font,
+        timeOut = tk.Button(self, text="Clock Out", bg='red', font=controller.title_font,
                            command=timeOut)
-        timeOut.pack()
+        timeOut.pack(expand=TRUE, fill =BOTH)
 
 class AddItem(tk.Frame):
 
@@ -451,6 +453,7 @@ class AddItem(tk.Frame):
             addConfirmationWindow = tk.Tk()
             addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
             addConfirmationLabel.pack(side="top", fill="x", pady=10)
+            # insertItem(itemNameLabel.get().upper(), itemModelLabel.get().upper(), UPCLabel.get(), random.randint(1,10), wholesalePriceLabel.get(), retailPriceLabel.get())
             insertItem(itemNameLabel.get().upper(), itemModelLabel.get().upper(), UPCLabel.get(), int(howManyLabel.get()), wholesalePriceLabel.get(), retailPriceLabel.get())
             itemNameLabel.delete(0,END)
             itemModelLabel.delete(0,END)
@@ -525,10 +528,12 @@ class Delete(tk.Frame):
 
         def callback():
             removeItems(itemNameLabel.get().upper())
-            deleteSuccess = tk.Label(self, text="Item Deleted Successfully")
-            deleteSuccess.pack()
+            # deleteSuccess = tk.Label(self, text="Item Deleted Successfully")
+            # deleteSuccess.pack()
             itemNameLabel.delete(0, END)
-
+            successWindow = tk.Tk()
+            successLabel = tk.Label(successWindow, text="Item deleted successfully")
+            successLabel.pack()
         deleteButton = tk.Button(self, text="Remove Item", command=callback)
         deleteButton.pack()
         goBackButton = tk.Button(self, text="Go Back", command=lambda: controller.show_frame("HomePage"))
@@ -550,13 +555,34 @@ class Separation(tk.Frame):
         lnameEntry.pack()
 
         def callback():
-            remove_emp(fnameEntry.get(), lnameEntry.get())
-            name = "\n" + fnameEntry.get() + " " + lnameEntry.get() + "\nSeparation complete."
-            successLabel = tk.Label(self, text=name, font=controller.title_font)
-            successLabel.pack()
+            user = controller.CURRENT_USER
+            with conn:
+                c.execute("""SELECT manager FROM employees WHERE username== :username""", {'username':user})
+            managerStatus = c.fetchone()
+            print(managerStatus)
+            if managerStatus[0] == "YES":
+                # print(employeeExists(fnameEntry.get(), lnameEntry.get()))
+                if employeeExists(fnameEntry.get(), lnameEntry.get()) == True:
+                    remove_emp(fnameEntry.get(), lnameEntry.get())
+                    termWindow = tk.Tk()
+                    name = "\n" + fnameEntry.get() + " " + lnameEntry.get() + "\nTermination complete."
+                    termCompleteLabel = tk.Label(termWindow, text=name)
+                    termCompleteLabel.pack()
+                    # successLabel = tk.Label(self, text=name, font=controller.title_font)
+                    # successLabel.pack()
+                    fnameEntry.delete(0,END)
+                    lnameEntry.delete(0,END)
+                else:
+                    termWindow = tk.Tk()
+                    termCompleteLabel = tk.Label(termWindow, text="No employee by that name")
+                    termCompleteLabel.pack()
+            else:
+                termWindow = tk.Tk()
+                termCompleteLabel = tk.Label(termWindow, text="You are not a manager.")
+                termCompleteLabel.pack()
+            fnameLabel.delete(0,END)
 
-
-        termButton = tk.Button(self, text="Separate Employee", command=callback)
+        termButton = tk.Button(self, text="Terminate Employee", command=callback)
         termButton.pack()
 
         defaultButton = tk.Button(self, text="Go Back", command=lambda: controller.show_frame("HomePage"))
@@ -632,9 +658,9 @@ class Email(tk.Frame):
                 # mailingList = mailingList + i[0] + ","
                 k = k + 1
             employeesWindow = tk.Tk()
-            employeesWindowText = tk.Text(employeesWindow)
+            employeesWindowText = tk.Text(employeesWindow, wrap=WORD)
             employeesWindowText.insert(INSERT, masterListString)
-            employeesWindowText.pack(fill="none", expand=TRUE)
+            employeesWindowText.pack(fill="none", expand=TRUE, wrap=WORD)
             sendEmail(emailAddress)
             messageEntry.delete(0,END)
 
@@ -644,7 +670,7 @@ class Email(tk.Frame):
         searchButton = tk.Button(self, text="Search Single Employee", command=viewSingleEmail)
         searchButton.pack()
 
-        searchAllButton = tk.Button(self, text="Search ALL Employees", command=viewAllEmails)
+        searchAllButton = tk.Button(self, text="Email ALL Employees", command=viewAllEmails)
         searchAllButton.pack()
 
         defaultButton = tk.Button(self, text="Go Back", command=lambda: controller.show_frame("HomePage"))

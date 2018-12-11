@@ -73,8 +73,13 @@ def searchItem(iName,iUPC):
     if iName != "":
         c.execute("SELECT * FROM items WHERE itemName=:itemName", {'itemName': iName})
         searchResult = c.fetchall()
+        columnHeaders = [description[0] for description in c.description]
         numOfResults = len(searchResult)
         outputString = ""
+        for i in range(10):
+            outputString = outputString + columnHeaders[i] + " | "
+        outputString = outputString + "\n\n"
+
         for i in range(numOfResults):
             for j in searchResult[i]:
                 outputString = outputString + str(j) + " | "
@@ -87,9 +92,14 @@ def searchItem(iName,iUPC):
 
     else:
         c.execute("SELECT * FROM items WHERE UPC=:UPC", {'UPC': iUPC})
+        columnHeaders = [description[0] for description in c.description]
         searchResult = c.fetchall()
         numOfResults = len(searchResult)
         outputString = ""
+        for i in range(10):
+            outputString = outputString + columnHeaders[i] + " | "
+        outputString = outputString + "\n\n"
+
         for i in range(numOfResults):
             for j in searchResult[i]:
                 outputString = outputString + str(j) + " | "
@@ -102,11 +112,28 @@ def searchItem(iName,iUPC):
 
 def lowInventory():
     c.execute("SELECT * FROM items WHERE itemQty<=:itemQty", {'itemQty':2})
-    results = c.fetchall()
-    lowStockWindow = tk.Tk()
-    lowStockWindow.title('Low Stock Items')
-    lowStockLabel = tk.Label(lowStockWindow, text=results)
-    lowStockLabel.pack()
+    columnHeaders = [description[0] for description in c.description]
+    searchResult = c.fetchall()
+    numOfResults = len(searchResult)
+    outputString = ""
+    for i in range(10):
+        outputString = outputString + columnHeaders[i] + " | "
+    outputString = outputString + "\n\n"
+    for i in range(numOfResults):
+        for j in searchResult[i]:
+            outputString = outputString + str(j) + " | "
+        outputString = outputString + "\n"
+
+    searchResultsWindow = tk.Tk()
+    searchResultsWindow.title('Results')
+    searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
+    searchResultsLabel.pack()
+
+    # results = c.fetchall()
+    # lowStockWindow = tk.Tk()
+    # lowStockWindow.title('Low Stock Items')
+    # lowStockLabel = tk.Label(lowStockWindow, text=results)
+    # lowStockLabel.pack()
 
 def profitPotential():
     c.execute("SELECT SUM(wWorth) FROM items")

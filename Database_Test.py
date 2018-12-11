@@ -5,12 +5,13 @@ import csv
 class Employee:
 
     #Constructor
-    def __init__(self,first, last, username, password, email):
+    def __init__(self,first, last, username, password, email, manager):
         self.first = first
         self.last = last
         self.username = username
         self.password = password
         self.email = email
+        self.manager = manager
     def email(self):
         return '{} {}@email.com'.format(self.first, self.last)
 
@@ -42,7 +43,8 @@ def initializeTABLES():
                 last text,
                 username text,
                 password text,
-                email text
+                email text,
+                manager text
                 )""")
 
     c.execute("""CREATE TABLE timesheet(
@@ -76,7 +78,7 @@ def initializeTABLES():
 
 def insert_emp(emp):
     with conn:
-        c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email })
+        c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email, :manager)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email, 'manager':emp.manager })
 
 def userAuthentication(uname, pword):
 
@@ -93,6 +95,13 @@ def get_emps_by_name(lastname):
 
     return c.fetchall()
 
+def employeeExists(fname, lname):
+    c.execute("SELECT last FROM employees WHERE last=:last and first=:first",{'first':fname, 'last':lname})
+
+    if len(c.fetchall()) >= 1:
+        return True
+    else:
+        return False
 
 def remove_emp(fname, lname):
     with conn:
