@@ -35,6 +35,8 @@ class SampleApp(tk.Tk):
         self.CURRENT_USER = None
         print("CURRENT USER STATUS", self.CURRENT_USER)
 
+        self.EMP_STATUS = None
+
         self.frames = {}
         for F in (LogIn, HomePage, AccountCreate, ForgotPass, ChangePassword, ViewAll, TimeClock, AddItem, Delete ,InventoryAudit, Search, Separation, Email):
             page_name = F.__name__
@@ -99,6 +101,14 @@ class LogIn(tk.Frame):
             if(userAuthentication(userNameLabel.get(),userPasswordLabel.get())):
                 controller.CURRENT_USER = userNameLabel.get()
                 print("CURRENT USER STATUS", controller.CURRENT_USER)
+
+                c.execute("SELECT manager FROM employees WHERE username=:username",{'username':controller.CURRENT_USER})
+
+                # Manager or Employee
+                Emp_Status = c.fetchone()
+                print(Emp_Status[0])
+                controller.EMP_STATUS = Emp_Status[0]
+
                 controller.show_frame("HomePage")
             userNameLabel.delete(0,END)
             userPasswordLabel.delete(0,END)
@@ -187,6 +197,7 @@ class HomePage(tk.Frame):
                           command=lambda: controller.show_frame("Separation"))
         termEmp.pack(padx=20, pady=10, fill='x')
 
+
         timeClock = tk.Button(self, text="Clock In/Out", font=controller.title_font,
                                   command=lambda: controller.show_frame("TimeClock"))
         timeClock.pack(padx=20, pady=10, fill='x')
@@ -200,8 +211,11 @@ class HomePage(tk.Frame):
         ProfitButton.pack(padx=20, pady=10, fill='x')
 
         def logoutCallback():
-            controller.CURRENT_USER = None;
+            controller.CURRENT_USER = None
+            controller.EMP_STATUS = None
             print("CURRENT USER STATUS", controller.CURRENT_USER)
+            print("CURRENT EMP STATUS", controller.EMP_STATUS)
+            
             controller.show_frame("LogIn")
         button = tk.Button(self, text="Logout",command=logoutCallback)
         button.pack()
@@ -241,19 +255,40 @@ class AccountCreate(tk.Frame):
         Email_Label = tk.Entry(self)
         Email_Label.pack()
 
-        managerLabel = tk.Label(self, text="Manager? (Yes/No)", font=controller.title_font)
-        managerLabel.pack(side="top", fill="x", pady=10)
-        managerEntry = tk.Entry(self)
-        managerEntry.pack()
+        # managerLabel = tk.Label(self, text="Manager? (Yes/No)", font=controller.title_font)
+        # managerLabel.pack(side="top", fill="x", pady=10)
+        # managerEntry = tk.Entry(self)
+        # managerEntry.pack()
+
+        var1 = IntVar()
+        manager1Entry = tk.Checkbutton(self, text="Manager", variable=var1)
+        manager1Entry.pack()
+        var2 = IntVar()
+        manager2Entry = tk.Checkbutton(self, text="Employee", variable=var2)
+        manager2Entry.pack()
+
+
+
+
 
         # Saves new user information into database
         def getUserInfo():
+            print("var1 is ", var1.get())
+            print("var2 is ", var2.get())
+
+
             fName = FirstName_Label.get()
             lName = LastName_Label.get()
             uName = UserName_Label.get()
             pWord = Password_Label.get()
             eMail = Email_Label.get()
-            manager = managerEntry.get().upper()
+            # manager = managerEntry.get().upper()
+
+            if var1.get() == 1:
+                manager = "Manager"
+            elif var2.get() == 1:
+                manager = "Employee"
+
             emp1 = Employee(fName,lName,uName, pWord, eMail, manager)
             insert_emp(emp1)
             creationSuccessWindow = tk.Tk()
@@ -560,7 +595,7 @@ class Separation(tk.Frame):
                 c.execute("""SELECT manager FROM employees WHERE username== :username""", {'username':user})
             managerStatus = c.fetchone()
             print(managerStatus)
-            if managerStatus[0] == "YES":
+            if managerStatus[0] == "Manager":
                 # print(employeeExists(fnameEntry.get(), lnameEntry.get()))
                 if employeeExists(fnameEntry.get(), lnameEntry.get()) == True:
                     remove_emp(fnameEntry.get(), lnameEntry.get())
