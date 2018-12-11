@@ -111,23 +111,34 @@ def searchItem(iName,iUPC):
         searchResultsLabel.pack()
 
 def lowInventory():
-    c.execute("SELECT * FROM items WHERE itemQty<=:itemQty", {'itemQty':2})
-    columnHeaders = [description[0] for description in c.description]
-    searchResult = c.fetchall()
-    numOfResults = len(searchResult)
-    outputString = ""
-    for i in range(10):
-        outputString = outputString + columnHeaders[i] + " | "
-    outputString = outputString + "\n\n"
-    for i in range(numOfResults):
-        for j in searchResult[i]:
-            outputString = outputString + str(j) + " | "
-        outputString = outputString + "\n"
+    def query(event=None):
+        c.execute("SELECT * FROM items WHERE itemQty<=:itemQty", {'itemQty':lowStockEntry.get()})
+        columnHeaders = [description[0] for description in c.description]
+        searchResult = c.fetchall()
+        numOfResults = len(searchResult)
+        outputString = ""
+        for i in range(10):
+            outputString = outputString + columnHeaders[i] + " | "
+        outputString = outputString + "\n\n"
+        for i in range(numOfResults):
+            for j in searchResult[i]:
+                outputString = outputString + str(j) + " | "
+            outputString = outputString + "\n"
 
-    searchResultsWindow = tk.Tk()
-    searchResultsWindow.title('Results')
-    searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
-    searchResultsLabel.pack()
+        searchResultsWindow = tk.Tk()
+        searchResultsWindow.title('Results')
+        searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
+        searchResultsLabel.pack()
+        searchResultsWindow
+
+    lowStockWindow = tk.Tk()
+    lowStockLabel = tk.Label(lowStockWindow, text="Enter quantity threshold")
+    lowStockEntry = tk.Entry(lowStockWindow)
+    lowStockButton = tk.Button(lowStockWindow, text='Submit', command=query)
+    lowStockLabel.pack()
+    lowStockEntry.pack()
+    lowStockButton.pack()
+    lowStockEntry.bind('<Return>',query)
 
     # results = c.fetchall()
     # lowStockWindow = tk.Tk()
