@@ -86,7 +86,7 @@ def searchItem(iName,iUPC):
             outputString = outputString + "\n"
 
         searchResultsWindow = tk.Tk()
-        searchResultsWindow.title('Results')
+        searchResultsWindow.title('Search Item')
         searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
         searchResultsLabel.pack()
 
@@ -106,7 +106,7 @@ def searchItem(iName,iUPC):
             outputString = outputString + "\n"
 
         searchResultsWindow = tk.Tk()
-        searchResultsWindow.title('Results')
+        searchResultsWindow.title('Search Item')
         searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
         searchResultsLabel.pack()
 
@@ -126,12 +126,13 @@ def lowInventory():
             outputString = outputString + "\n"
 
         searchResultsWindow = tk.Tk()
-        searchResultsWindow.title('Results')
+        searchResultsWindow.title('Low Stock Items')
         searchResultsLabel = tk.Label(searchResultsWindow, text=outputString)
         searchResultsLabel.pack()
         searchResultsWindow
 
     lowStockWindow = tk.Tk()
+    lowStockWindow.title('Low Stock Items')
     lowStockLabel = tk.Label(lowStockWindow, text="Enter quantity threshold")
     lowStockEntry = tk.Entry(lowStockWindow)
     lowStockButton = tk.Button(lowStockWindow, text='Submit', command=query)
@@ -154,6 +155,7 @@ def profitPotential():
     potentialProfit = round(rVal,2) - round(wVal,2)
     print(round(potentialProfit,2))
     ppWindow = tk.Tk()
+    ppWindow.title('Profit Potential')
     printOut = "Your warehouse inventory is worth: $" + str(round(wVal,2)) + "\n" + "Retail value is: $" + str(round(rVal,2)) + "\n" + "\nProfit Potential is: $" + str(round(potentialProfit,2))
     ppMessage = tk.Message(ppWindow, text=printOut, width=400)
     ppMessage.pack()

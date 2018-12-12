@@ -1,6 +1,6 @@
 import sqlite3
 import csv
-import tkinter as tk 
+import tkinter as tk
 
 class Employee:
 
@@ -84,10 +84,12 @@ def insert_emp(emp):
         with conn:
             c.execute("INSERT INTO employees VALUES(:first, :last ,:username,:password, :email, :manager)", {'first': emp.first, 'last': emp.last,'username':emp.username, 'password': emp.password, 'email':emp.email, 'manager':emp.manager })
         creationSuccessWindow = tk.Tk()
+        creationSuccessWindow.title('New Employee')
         creationSuccessLabel = tk.Label(creationSuccessWindow, text="Account Created Successfully")
         creationSuccessLabel.pack()
     else:
         creationSuccessWindow = tk.Tk()
+        creationSuccessWindow.title('New Employee')
         creationSuccessLabel = tk.Label(creationSuccessWindow, text="User exists. Please try another username")
         creationSuccessLabel.pack()
 

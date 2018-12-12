@@ -379,6 +379,7 @@ class ViewAll(tk.Frame):
                     controller.show_frame("HomePage")
 
                     employeesWindow = tk.Tk()
+                    employeesWindow.title('Email(s)')
                     employeesWindowText = tk.Text(employeesWindow)
                     employeesWindowText.insert(INSERT, masterString)
                     employeesWindowText.pack(fill="none", expand=TRUE)
@@ -400,6 +401,7 @@ class TimeClock(tk.Frame):
             datetime.time(now.hour, now.minute, now.second)
             timeStamp = "Your timestamp is: " + now.strftime("%H:%M:%S")
             timeStampWindow = tk.Tk()
+            timeStampWindow.title('Timesheet')
             timeStampLabel = tk.Label(timeStampWindow, text=timeStamp)
             timeStampLabel.pack()
             controller.show_frame("HomePage")
@@ -491,6 +493,7 @@ class AddItem(tk.Frame):
 
         def callback():
             addConfirmationWindow = tk.Tk()
+            addConfirmationWindow.title('Add Item')
             addConfirmationLabel = tk.Label(addConfirmationWindow, text=(itemNameLabel.get()+" added to inventory successfully."))
             addConfirmationLabel.pack(side="top", fill="x", pady=10)
             # insertItem(itemNameLabel.get().upper(), itemModelLabel.get().upper(), UPCLabel.get(), random.randint(1,10), wholesalePriceLabel.get(), retailPriceLabel.get())
@@ -572,6 +575,7 @@ class Delete(tk.Frame):
             # deleteSuccess.pack()
             itemNameLabel.delete(0, END)
             successWindow = tk.Tk()
+            successWindow.title('Delete')
             successLabel = tk.Label(successWindow, text="Item deleted successfully")
             successLabel.pack()
         deleteButton = tk.Button(self, text="Remove Item", command=callback)
@@ -605,6 +609,7 @@ class Separation(tk.Frame):
                 if employeeExists(fnameEntry.get(), lnameEntry.get()) == True:
                     remove_emp(fnameEntry.get(), lnameEntry.get())
                     termWindow = tk.Tk()
+                    termWindow.title('Termination')
                     name = "\n" + fnameEntry.get() + " " + lnameEntry.get() + "\nTermination complete."
                     termCompleteLabel = tk.Label(termWindow, text=name)
                     termCompleteLabel.pack()
@@ -614,10 +619,12 @@ class Separation(tk.Frame):
                     lnameEntry.delete(0,END)
                 else:
                     termWindow = tk.Tk()
+                    termWindow.title('Termination')
                     termCompleteLabel = tk.Label(termWindow, text="No employee by that name")
                     termCompleteLabel.pack()
             else:
                 termWindow = tk.Tk()
+                termWindow.title('Termination')
                 termCompleteLabel = tk.Label(termWindow, text="You are not a manager.")
                 termCompleteLabel.pack()
             fnameLabel.delete(0,END)
@@ -654,6 +661,7 @@ class Email(tk.Frame):
                 emailAddress = c.fetchone()
             if(emailAddress == None):
                 employeesWindow = tk.Tk()
+                employeesWindow.title('Email(s)')
                 employeesWindowText = tk.Text(employeesWindow)
                 employeesWindowText.insert(INSERT, "No email address found for: " + fnameEntry.get() + " "+ lnameEntry.get())
                 employeesWindowText.pack(fill="none", expand=TRUE)
@@ -663,6 +671,8 @@ class Email(tk.Frame):
                 lnameEntry.delete(0,END)
             else:
                 employeesWindow = tk.Tk()
+                employeesWindow.title('Email(s)')
+                employeesWindowText = tk.Text(employeesWindow)
                 employeesWindowText = tk.Text(employeesWindow)
                 employeesWindowText.insert(INSERT, emailAddress)
                 employeesWindowText.pack()
@@ -674,6 +684,7 @@ class Email(tk.Frame):
         def sendEmail(list):
             if(messageEntry.get("1.0", END)==" "):
                 errorWindow = tk.Tk()
+                errorWindow.title('Error')
                 errorWindowLabel = tk.Text(errorWindow)
                 errorWindowLabel.insert(INSERT, "No message entered. Fill in message field.")
                 errorWindowLabel.pack()
@@ -698,6 +709,7 @@ class Email(tk.Frame):
                 # mailingList = mailingList + i[0] + ","
                 k = k + 1
             employeesWindow = tk.Tk()
+            employeesWindow.title('Email(s)')
             employeesWindowText = tk.Text(employeesWindow)
             employeesWindowText.insert(INSERT, masterListString)
             employeesWindowText.pack()
