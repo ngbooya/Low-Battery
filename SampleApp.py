@@ -310,7 +310,6 @@ class AccountCreate(tk.Frame):
             UserName_Label.delete(0,END)
             Password_Label.delete(0,END)
             Email_Label.delete(0,END)
-            managerEntry.delete(0,END)
 
         SubmitButton = tk.Button(self, text="Submit", command=getUserInfo)
         SubmitButton.pack()
@@ -379,7 +378,7 @@ class ViewAll(tk.Frame):
                     controller.show_frame("HomePage")
 
                     employeesWindow = tk.Tk()
-                    employeesWindow.title('Email(s)')
+                    employeesWindow.title('Employees')
                     employeesWindowText = tk.Text(employeesWindow)
                     employeesWindowText.insert(INSERT, masterString)
                     employeesWindowText.pack(fill="none", expand=TRUE)
